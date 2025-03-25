@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "P4OKS2ZvwYs=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Peillon\\Documents\\GitHub\\Module2_CSharp\\Projet\\Projet.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Peillon\\.nuget\\packages\\raylib-cs\\7.0.1\\raylib-cs.7.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

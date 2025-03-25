@@ -1,0 +1,16 @@
+public class Deprecated
+{
+    private int GenerateNbCellSeen()
+    {   
+        int i_EnemyLevel = 0; 
+        int result = 3;
+        if (i_EnemyLevel == 1) return result;
+
+        for (int i = 2; i <= i_EnemyLevel; i++)
+        {
+            result += 12 + (4 * (i - 3));
+        }
+
+        return result;
+    }
+} 
