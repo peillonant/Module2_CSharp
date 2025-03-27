@@ -6,6 +6,7 @@ public class Snake
     private int i_Size;
     private int i_Direction;                         // 1 = Top, 2 = Right, 3 = Bottom, 4 = Left   
     private float f_timerMove;
+    private bool b_CanMove;
 
     private Vector2 v2_Head = new();
     private List<Vector2> v2_Bodys = new();
@@ -49,16 +50,7 @@ public class Snake
 
     public void UpdateSnakeMovement(Board localBoard)
     {
-        f_timerMove += Raylib.GetFrameTime();
-        
-        bool b_CanMove = false;
-
-        // The timerMove will be change with the variable of the current level of the game to speed the movement
-        if (f_timerMove > GameInfo.Instance.GetSpeedSnake())
-        {
-            f_timerMove = 0;
-            b_CanMove = true;
-        }
+        b_CanMove = GenericFunction.Instance.UpdateTimer(ref f_timerMove);
 
         if (b_CanMove)
         {
@@ -68,6 +60,8 @@ public class Snake
 
             if (localBoard.CheckCollision(v2_newPositionHead, true))
                 UpdateSnakePosition(v2_newPositionHead, localBoard);
+            
+            b_CanMove = false;
         }   
     }
 

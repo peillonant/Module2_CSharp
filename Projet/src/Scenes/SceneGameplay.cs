@@ -21,7 +21,6 @@ public class SceneGameplay : Scene
 
     public override void Draw()
     {
-        //Raylib.DrawText(GameManager.Instance.GetDifficultyGame().ToString(), 10, 10, 30, Color.Black);
         GameManager.Instance.DrawGame();
         base.Draw();
     }

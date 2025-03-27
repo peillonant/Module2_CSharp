@@ -3,15 +3,14 @@ using Raylib_cs;
 
 public static class Program
 {
-    public static void Main()
+    private static void Main()
     {
         int i_ScreenWidth = 1280;
-        int i_ScreenHight = 720;
+        int i_ScreenHight = 1000;
 
         Raylib.InitWindow(i_ScreenWidth, i_ScreenHight, "Jeu de la vie");
         Raylib.SetWindowState(ConfigFlags.ResizableWindow);
         Raylib.SetTargetFPS(60);
-        Raylib.SetExitKey(KeyboardKey.Null); 
 
         GameManager gameManager = new GameManager();
 

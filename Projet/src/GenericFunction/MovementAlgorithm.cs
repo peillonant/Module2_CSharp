@@ -39,7 +39,8 @@ public class MovementAlgorithm
     // Function called by Enemy script to launch the Algorithm on the Update methode
     public void LaunchAlgorithm()
     {
-        UpdateTimer();
+        b_CheckAlgo = GenericFunction.Instance.UpdateTimer(ref f_Timer);
+        
         if (b_CheckAlgo)
         {
             if (CheckToLaunchPathfinder())
@@ -63,19 +64,6 @@ public class MovementAlgorithm
             i_PathIndex++;     
             
             b_CheckAlgo = false;
-        }
-    }
-
-    // Method to alow the enemy snake to check if it can change direction or not
-    private void UpdateTimer()
-    {
-        f_Timer += Raylib.GetFrameTime();
-        
-        // The timerMove will be change with the variable of the current level of the game to speed the movement
-        if (f_Timer > GameInfo.Instance.GetSpeedSnake())
-        {
-            f_Timer = 0;
-            b_CheckAlgo = true;
         }
     }
 

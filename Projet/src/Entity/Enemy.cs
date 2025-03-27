@@ -1,21 +1,14 @@
-using System.Diagnostics;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 using Raylib_cs;
 
 public class Enemy : Character
 {
     private int i_EnemyLevel;
-    private int i_EnemyPositionOnBoard;
-    private bool b_StillAlive;
-    private int i_EnemyPositionLadder;
-
     private MovementAlgorithm movementAlgorithm;
 
     public Enemy(int i_newEnemyPositionOnBoard)
     {
         // Position the Snake on the playerBoard at the beginning
-        characterBoard = new Board(false);
+        characterBoard = new Board();
         characterBoard.AddObject(new(9, 9), 1);
 
         // 1 = Top, 2 = Right, 3 = Bottom, 4 = Left
@@ -27,12 +20,15 @@ public class Enemy : Character
         movementAlgorithm = new(characterBoard, ref characterSnake, i_EnemyLevel);
 
         // Put the position of the Enemy on the UI
-        i_EnemyPositionOnBoard = (i_newEnemyPositionOnBoard >= 0) ? i_newEnemyPositionOnBoard : -1;
+        i_PositionOnTable = (i_newEnemyPositionOnBoard >= 0) ? i_newEnemyPositionOnBoard : -1;
 
-        UI_Board = new(ref characterBoard);
+        UI_Board = new(this);
 
-        if (i_EnemyPositionOnBoard >= 0 )
-           UI_Board.UpdatePositionBoard(i_EnemyPositionOnBoard);
+        if (i_PositionOnTable >= 0 )
+        {
+           i_IndexTable = 1;
+           b_IsDisplayed = true;
+        }
 
         SubscriptionEvent(); 
     }
@@ -46,8 +42,8 @@ public class Enemy : Character
 
         if (i_DifficultyGame == 1)    
         {
-            i_ValueMin = 1;
-            i_ValueMax = 5;
+            i_ValueMin = 10;
+            i_ValueMax = 10;
         }
         else if (i_DifficultyGame == 2)
         {
@@ -65,28 +61,35 @@ public class Enemy : Character
 
     public override void UpdatePlayer()
     {
-        movementAlgorithm.LaunchAlgorithm();
-        base.UpdatePlayer();
+        if (b_StillAlive)
+        {
+            movementAlgorithm.LaunchAlgorithm();
+            base.UpdatePlayer();
+            UpdatePositionBoard();
+        }
     }
 
+    protected override void OnTimerDown() => GameLost();
 
-    protected override void OnTimerDown()
-    {
-        //Console.Write("EnenmyManger lose regarding the Time");
-    }
+    protected override void OnCollisionLost() => GameLost();
 
-    protected override void OnCollisionLost()
+    private void GameLost()
     {
-        //Console.Write("EnenmyManger lose regarding the Collision");
+        if (b_StillAlive)
+        {
+            b_StillAlive = false;
+            characterTimer.TimerLoose();
+            GameInfo.Instance.DecreaseNbPlayerAlive();
+            b_CanBeDisplay = false;
+        }
     }
 
 
     public override void DrawBoard()
     {
-        if (i_EnemyPositionOnBoard >= 0)
+        if (i_PositionOnTable >= 0 && i_IndexTable > 0)
         {
             UI_Board.DrawBoard();
-            UI_Board.DrawInfo(this);
         }
     }
 }

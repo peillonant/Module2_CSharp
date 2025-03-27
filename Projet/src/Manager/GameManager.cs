@@ -1,8 +1,4 @@
 
-using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
-using Raylib_cs;
-
 public class GameManager
 {
     #region Instance
@@ -17,18 +13,22 @@ public class GameManager
     }
     #endregion
     
-    private CharacterManager characterManager;
+    private CharacterManager? characterManager;
+    private NotificationManager? notificationManager;
 
     public void InitGame()
     {
         Console.WriteLine("Initialization New Game");
-        characterManager = new CharacterManager();
+        characterManager = new();
+        notificationManager = new();
     }
 
     public void UpdateGameManager()
     {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
         characterManager.UpdateCharacters();
-        GameInfo.Instance.IncreaseSpeed();
+        notificationManager.UpdateNotification();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 
     public void GameLostTimer()
@@ -45,7 +45,10 @@ public class GameManager
 
     public void DrawGame()
     {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
         characterManager.DrawCharacters();
+        notificationManager.DrawNotification();
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 
     public void Close()

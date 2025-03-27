@@ -2,14 +2,15 @@ using Raylib_cs;
 
 public class Timer
 {
-    private int i_TimerLife = Raylib.GetRandomValue(20,60);
+    private int i_TimerLife = 60;
     private float f_Timer = 0;
 
     public event Action? TimerDown;
 
     public int GetTimerLife() => i_TimerLife;
+    public void TimerLoose() => i_TimerLife = -GameInfo.Instance.GetNbPlayerAlive();
 
-    public void IncreaseTimer() => i_TimerLife += 10;
+    public void IncreaseTimer(int i_nbIncrease) => i_TimerLife += i_nbIncrease;
 
     public void UpdateTimer()
     {

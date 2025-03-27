@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Raylib_cs;
 
-public static class Program
+public static class Game
 {
     static SceneMenu sceneMenu = new();
     static SceneGameplay sceneGameplay = new();
@@ -37,7 +37,7 @@ public static class Program
 
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.RayWhite);
-
+            
             gameState.DrawScene();
 
             Raylib.EndDrawing();

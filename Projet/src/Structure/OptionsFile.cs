@@ -9,11 +9,13 @@ public class OptionsFile
 
     //private string AppName = Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName);
 
-    private readonly string fullPath;
+    private readonly string? fullPath;
 
     protected Dictionary<string, string> options;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     public OptionsFile()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     {
         fullPath = null;
         options = new Dictionary<string, string>();
@@ -135,6 +137,8 @@ public class OptionsFile
        // Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
         var jsonString = JsonSerializer.Serialize(options);
         Debug.WriteLine($"JSON : {jsonString}");
+#pragma warning disable CS8604 // Possible null reference argument.
         File.WriteAllText(fullPath, jsonString);
+#pragma warning restore CS8604 // Possible null reference argument.
     }
 }

@@ -45,6 +45,30 @@ public class InputManager
             gameManager.i_SpeedIncrement = 3;
         }
 
+        if (Raylib.IsKeyPressed(KeyboardKey.Four))
+        {
+            gameManager.b_IsPaused = false;
+            gameManager.i_SpeedIncrement = 4;
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.Five))
+        {
+            gameManager.b_IsPaused = false;
+            gameManager.i_SpeedIncrement = 5;
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.Six))
+        {
+            gameManager.b_IsPaused = false;
+            gameManager.i_SpeedIncrement = 6;
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.Seven))
+        {
+            gameManager.b_IsPaused = false;
+            gameManager.i_SpeedIncrement = 7;
+        }
+
         if (Raylib.IsKeyPressed(KeyboardKey.Left))
         {
             if (gameManager.i_SpeedIncrement > 1)
@@ -55,7 +79,7 @@ public class InputManager
 
         if (Raylib.IsKeyPressed(KeyboardKey.Right))
         {
-            if (gameManager.i_SpeedIncrement < 3)
+            if (gameManager.i_SpeedIncrement < 10)
                 gameManager.i_SpeedIncrement++;
             
             gameManager.b_IsPaused = false;
@@ -78,16 +102,18 @@ public class InputManager
         if (v2_MousePosition.X > i_BorderLeftBoard && v2_MousePosition.X < i_BorderRightBoard &&
             v2_MousePosition.Y > i_BorderTopBoard &&  v2_MousePosition.Y < i_BoardBottomBoard)
         {
-            if (Raylib.IsMouseButtonPressed(MouseButton.Left))
-            {
-                int tmpPX = (int) v2_MousePosition.X - i_BorderLeftBoard;
-                int tmpPY = (int) v2_MousePosition.Y - i_BorderTopBoard;
+            int tmpPX = (int) v2_MousePosition.X - i_BorderLeftBoard;
+            int tmpPY = (int) v2_MousePosition.Y - i_BorderTopBoard;
 
-                tmpPX = tmpPX / gameManager.board.i_cellWidth;
-                tmpPY = tmpPY / gameManager.board.i_cellHeight;
+            tmpPX = tmpPX / gameManager.board.i_cellWidth;
+            tmpPY = tmpPY / gameManager.board.i_cellHeight;
 
-                gameManager.board.i_TabBoard[tmpPX, tmpPY] = ( gameManager.board.i_TabBoard[tmpPX, tmpPY] == 0) ? 1 : 0;
-            }
-        }        
+            if (Raylib.IsMouseButtonDown(MouseButton.Left))
+                gameManager.board.i_TabBoard[tmpPX, tmpPY] = 1;
+
+            if (Raylib.IsMouseButtonDown(MouseButton.Right))
+                gameManager.board.i_TabBoard[tmpPX, tmpPY] = 0;
+            
+        }
     }
 }

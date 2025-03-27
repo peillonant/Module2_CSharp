@@ -17,7 +17,7 @@ public class Board
     #endregion
 
     #region Variable
-    private readonly int[,] i_Board = new int[GameInfo.Instance.GetNbCol(), GameInfo.Instance.GetNbLin()];
+    private readonly int[,] i_Board = new int[GameInfo.i_nbCol, GameInfo.i_nbLin];
     private readonly bool b_isPlayer;
     #endregion
 
@@ -25,11 +25,11 @@ public class Board
     public bool IsPlayer() => b_isPlayer;
     #endregion
 
-    public Board(bool b_localPlayer)
+    public Board(bool b_localPlayer = false)
     {
-        for (int i=0 ; i < GameInfo.Instance.GetNbLin(); i++)
+        for (int i=0 ; i < GameInfo.i_nbLin; i++)
         {
-            for (int j =0 ; j < GameInfo.Instance.GetNbCol(); j++)
+            for (int j =0 ; j < GameInfo.i_nbCol; j++)
             {
                 i_Board[i, j] = 0;
             }
@@ -48,7 +48,7 @@ public class Board
         int i_IndexLin = (int) v2_PositionToReturn.X;
         int i_IndexCol = (int) v2_PositionToReturn.Y;
 
-        if (i_IndexCol < 0 || i_IndexCol >= GameInfo.Instance.GetNbCol() || i_IndexLin < 0 || i_IndexLin >= GameInfo.Instance.GetNbLin())
+        if (i_IndexCol < 0 || i_IndexCol >= GameInfo.i_nbCol || i_IndexLin < 0 || i_IndexLin >= GameInfo.i_nbLin)
             return -1;
         else
             return i_Board[i_IndexCol, i_IndexLin];
@@ -64,8 +64,8 @@ public class Board
         bool b_PositionValidated;
         do
         {
-            i_IndexCol = Raylib.GetRandomValue(0, GameInfo.Instance.GetNbCol() - 1);
-            i_IndexLin = Raylib.GetRandomValue(0, GameInfo.Instance.GetNbLin() - 1);
+            i_IndexCol = Raylib.GetRandomValue(0, GameInfo.i_nbCol - 1);
+            i_IndexLin = Raylib.GetRandomValue(0, GameInfo.i_nbLin - 1);
 
             v2_PositionApple = new(i_IndexLin, i_IndexCol);
 
@@ -86,10 +86,10 @@ public class Board
             i_Board[i_IndexCol, i_IndexLin] = (i_IndexBoard == 0) ? 1 : 0;
         
         else if (i_SizeSnake == 2)
-            i_Board[i_IndexCol, i_IndexLin] = (i_IndexBoard < 2)? i_IndexBoard + 1 : 0;
+            i_Board[i_IndexCol, i_IndexLin] = (i_IndexBoard < 2) ? i_IndexBoard + 1 : 0;
 
         else if (i_SizeSnake >= 3)
-            i_Board[i_IndexCol, i_IndexLin] = (i_IndexBoard < 3)? i_IndexBoard + 1 : 0;
+            i_Board[i_IndexCol, i_IndexLin] = (i_IndexBoard < 3) ? i_IndexBoard + 1 : 0;
     }
 
     public bool CheckCollision(Vector2 v2_SnakePosition, bool b_isSnake)
@@ -98,7 +98,7 @@ public class Board
         int i_IndexCol = (int) v2_SnakePosition.Y;
 
         // First check if the head of the snake is hitting outside of the board
-        if (i_IndexCol < 0 || i_IndexCol >= GameInfo.Instance.GetNbCol() || i_IndexLin < 0 || i_IndexLin >= GameInfo.Instance.GetNbLin())
+        if (i_IndexCol < 0 || i_IndexCol >= GameInfo.i_nbCol || i_IndexLin < 0 || i_IndexLin >= GameInfo.i_nbLin)
         {
             if (b_isSnake) CollisionBorder?.Invoke();
 
@@ -118,9 +118,17 @@ public class Board
                 //Console.WriteLine("Condition on the CheckCollision trigger by the hitting his body " + i_indexCell);
                 return false;
             }
+            else if (i_indexCell > 20 && i_indexCell < 29)
+            {
+                if (b_isSnake) 
+                    CollisionCollider?.Invoke();
+
+                return false;
+            }
             else if (i_indexCell > 30 && i_indexCell < 34)
             {
-                if (b_isSnake) CollisionOpponent?.Invoke();
+                if (b_isSnake) 
+                    CollisionOpponent?.Invoke();
 
                 //Console.WriteLine("Condition on the CheckCollision trigger by the hitting the oppononent body " + i_indexCell);
                 return false;

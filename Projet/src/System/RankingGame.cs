@@ -1,22 +1,28 @@
+using System.Diagnostics;
+
 public class RankingGame
 {
-    private List<Character> listCharacter = [];
+    private Character[] tabCharacter;
 
-    public RankingGame(List<Character> originListCharacter)
+    public RankingGame(Character[] originListCharacter)
     {   
-        foreach (Character character in originListCharacter)
+        tabCharacter = new Character[originListCharacter.Length];
+
+        for (int i = 0; i < originListCharacter.Length; i ++ )
         {
-            listCharacter.Add(character);
+            tabCharacter[i] = originListCharacter[i];
         }
     }
 
     public void UpdateRanking()
     {
-        listCharacter.Sort(0, GameInfo.Instance.GetNbPlayerAlive()-1, new CompareTimer());
+        Array.Sort(tabCharacter, new CompareTimer());
 
-        for (int i = 0; i < listCharacter.Count; i++)
+        //listCharacter.Sort(0, GameInfo.Instance.GetNbPlayerTotal(), new CompareTimer());
+
+        for (int i = 0; i < tabCharacter.Length; i++)
         {
-            listCharacter[i].SetRanking(i + 1);
+            tabCharacter[i].SetRanking(i + 1);
         }
     }
 }
