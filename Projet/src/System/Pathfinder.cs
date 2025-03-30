@@ -23,7 +23,7 @@ public class Pathfinder
     {
         currentFrontier.Clear();
         openSet.Clear();
-    } 
+    }
 
     // Main pathfinding function, marks cells as being in frontier, while keeping a copy of the frontier
     // in "currentFrontier" for later clearing
@@ -37,11 +37,11 @@ public class Pathfinder
         openSet.Enqueue(CellSnakeHead);
         CellSnakeHead.SetCost(0);
         currentFrontier.Add(CellSnakeHead);
-    
+
         while (openSet.Count > 0)
         {
             currentCell = openSet.Dequeue();
-            
+
             // now check all direction adjacent to the currentCell
             int i_TmpDirection = (currentCell.GetCost() == 0) ? mvtAlgo.GetSnake().GetDirection() : 0;
 
@@ -85,15 +85,15 @@ public class Pathfinder
         }
 
         // Rotate around the origine cell to check each cell around and find all correct adjacent cell
-        for (int i = i_CellToStart; i < i_NbAdjacentToCheck; i ++)
+        for (int i = i_CellToStart; i < i_NbAdjacentToCheck; i++)
         {
             int tmpDirection = (i % 4 == 0) ? 4 : i % 4;
             Vector2 v2_PositionToCheck = origin.GetCellPosition();
 
-            GenericFunction.Instance.ChangePosition(ref v2_PositionToCheck, tmpDirection);
+            GenericFunction.ChangePosition(ref v2_PositionToCheck, tmpDirection);
 
             Cell adjacentCell = new Cell(v2_PositionToCheck, board);
-            
+
             if (CheckVision(adjacentCell, SnakeBrain))
                 continue;
 
@@ -124,7 +124,7 @@ public class Pathfinder
     {
         if (snakeBrain.b_CanSeeBorder && cell.GetTypeCell() == TypeCell.Border)
             return true;
-        
+
         if (snakeBrain.b_CanSeeObstacle && cell.GetTypeCell() == TypeCell.Collision)
             return true;
 
@@ -167,7 +167,7 @@ public class Pathfinder
                 }
                 else
                     break;
-            }    
+            }
         }
 
         currentPath.Add(origin);

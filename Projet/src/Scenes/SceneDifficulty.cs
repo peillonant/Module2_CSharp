@@ -17,11 +17,11 @@ public class SceneDifficulty : Scene
 
     public SceneDifficulty()
     {
-        easyButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) /2 , ((Raylib.GetScreenHeight() - i_ButtonHeight) /2 ) - i_ButtonHeight - 5, i_ButtonWidht, i_ButtonHeight), Text = "Easy", Color = Color.White };
-        mediumButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) /2, (Raylib.GetScreenHeight() - i_ButtonHeight) /2 , i_ButtonWidht, i_ButtonHeight), Text = "Medium", Color = Color.White };
-        hardButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) /2, ((Raylib.GetScreenHeight() - i_ButtonHeight) /2 ) + i_ButtonHeight + 5, i_ButtonWidht, i_ButtonHeight), Text = "Hard", Color = Color.White };
-        extremButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) /2, ((Raylib.GetScreenHeight() - i_ButtonHeight) /2 ) + (i_ButtonHeight + 5) * 2, i_ButtonWidht, i_ButtonHeight), Text = "Extrem", Color = Color.White };
-        backButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) /2, ((Raylib.GetScreenHeight() - i_ButtonHeight) /2 ) + (i_ButtonHeight + 5) *3, i_ButtonWidht, i_ButtonHeight), Text = "Back", Color = Color.White };
+        easyButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) / 2, ((Raylib.GetScreenHeight() - i_ButtonHeight) / 2) - i_ButtonHeight - 5, i_ButtonWidht, i_ButtonHeight), Text = "Easy", Color = Color.White };
+        mediumButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) / 2, (Raylib.GetScreenHeight() - i_ButtonHeight) / 2, i_ButtonWidht, i_ButtonHeight), Text = "Medium", Color = Color.White };
+        hardButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) / 2, ((Raylib.GetScreenHeight() - i_ButtonHeight) / 2) + i_ButtonHeight + 5, i_ButtonWidht, i_ButtonHeight), Text = "Hard", Color = Color.White };
+        extremButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) / 2, ((Raylib.GetScreenHeight() - i_ButtonHeight) / 2) + (i_ButtonHeight + 5) * 2, i_ButtonWidht, i_ButtonHeight), Text = "Extrem", Color = Color.White };
+        backButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) / 2, ((Raylib.GetScreenHeight() - i_ButtonHeight) / 2) + (i_ButtonHeight + 5) * 3, i_ButtonWidht, i_ButtonHeight), Text = "Back", Color = Color.White };
 
         buttonsList_Difficulty.AddButton(easyButton);
         buttonsList_Difficulty.AddButton(mediumButton);
@@ -44,28 +44,28 @@ public class SceneDifficulty : Scene
 
     // Game loop, Update variable
     public override void Update()
-    {   
+    {
         buttonsList_Difficulty.Update();
         if (easyButton.IsClicked || Raylib.IsKeyPressed(KeyboardKey.Space))
         {
-            GameInfo.Instance.SetDifficultyGame(1);
+            GameInfo.SetDifficultyGame(1);
             GameState.Instance.ChangeScene("gameplay");
         }
         else if (mediumButton.IsClicked)
         {
-            GameInfo.Instance.SetDifficultyGame(2);
+            GameInfo.SetDifficultyGame(2);
             Console.WriteLine("Medium Button has been clicked");
             GameState.Instance.ChangeScene("gameplay");
         }
         else if (hardButton.IsClicked)
         {
-            GameInfo.Instance.SetDifficultyGame(3);
+            GameInfo.SetDifficultyGame(3);
             Console.WriteLine("Hard Button has been clicked");
             GameState.Instance.ChangeScene("gameplay");
         }
         else if (extremButton.IsClicked)
         {
-            GameInfo.Instance.SetDifficultyGame(4);
+            GameInfo.SetDifficultyGame(4);
             Console.WriteLine("Extrem Button has been clicked");
             GameState.Instance.ChangeScene("gameplay");
         }
@@ -81,9 +81,9 @@ public class SceneDifficulty : Scene
     {
         string s_textTitle = "DIFFICULTY";
         Vector2 v2_sizeTitle = Raylib.MeasureTextEx(Raylib.GetFontDefault(), s_textTitle, 20, 1);
-        int i_px = Raylib.GetScreenWidth() /2 - (int) (v2_sizeTitle.X / 2);
-        int i_py = (Raylib.GetScreenHeight() - i_ButtonHeight) /2 - i_ButtonHeight * 2 - 5; 
-        
+        int i_px = Raylib.GetScreenWidth() / 2 - (int)(v2_sizeTitle.X / 2);
+        int i_py = (Raylib.GetScreenHeight() - i_ButtonHeight) / 2 - i_ButtonHeight * 2 - 5;
+
         Raylib.DrawText(s_textTitle, i_px, i_py, 20, Color.Black);
 
         buttonsList_Difficulty.Draw();

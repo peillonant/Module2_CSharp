@@ -17,36 +17,30 @@ public class Board
     #endregion
 
     #region Variable
-    private readonly int[,] i_Board = new int[GameInfo.i_nbCol, GameInfo.i_nbLin];
-    private readonly bool b_isPlayer;
+    private readonly int[,] i_Board = new int[GameInfo.i_nbCol, GameInfo.i_nbLin]; // Update this to be an Array of cell
     #endregion
 
-    #region Encapsulation
-    public bool IsPlayer() => b_isPlayer;
-    #endregion
-
-    public Board(bool b_localPlayer = false)
+    public Board()
     {
-        for (int i=0 ; i < GameInfo.i_nbLin; i++)
+        for (int i = 0; i < GameInfo.i_nbLin; i++)
         {
-            for (int j =0 ; j < GameInfo.i_nbCol; j++)
+            for (int j = 0; j < GameInfo.i_nbCol; j++)
             {
                 i_Board[i, j] = 0;
             }
         }
 
-        b_isPlayer = b_localPlayer;
         GenerateNewApple();
     }
 
-    public void AddObject (Vector2 v2_PositionObjectToAdd, int i_IndexObject) =>  i_Board[(int) v2_PositionObjectToAdd.Y, (int) v2_PositionObjectToAdd.X] = i_IndexObject;
+    public void AddObject(Vector2 v2_PositionObjectToAdd, int i_IndexObject) => i_Board[(int)v2_PositionObjectToAdd.Y, (int)v2_PositionObjectToAdd.X] = i_IndexObject;
 
-    public void RemoveObject (Vector2 v2_PositionObjectToRemove) => i_Board[(int) v2_PositionObjectToRemove.Y, (int) v2_PositionObjectToRemove.X] = 0;
+    public void RemoveObject(Vector2 v2_PositionObjectToRemove) => i_Board[(int)v2_PositionObjectToRemove.Y, (int)v2_PositionObjectToRemove.X] = 0;
 
-    public int GetValueBoard (Vector2 v2_PositionToReturn)
+    public int GetValueBoard(Vector2 v2_PositionToReturn)
     {
-        int i_IndexLin = (int) v2_PositionToReturn.X;
-        int i_IndexCol = (int) v2_PositionToReturn.Y;
+        int i_IndexLin = (int)v2_PositionToReturn.X;
+        int i_IndexCol = (int)v2_PositionToReturn.Y;
 
         if (i_IndexCol < 0 || i_IndexCol >= GameInfo.i_nbCol || i_IndexLin < 0 || i_IndexLin >= GameInfo.i_nbLin)
             return -1;
@@ -71,20 +65,20 @@ public class Board
 
             b_PositionValidated = CheckCollision(v2_PositionApple, false);
 
-        }while(!b_PositionValidated);
+        } while (!b_PositionValidated);
 
         AddObject(v2_PositionApple, 10);
     }
 
-    public void UpdateSnakePosition (Vector2 v2_SnakePosition, int i_SizeSnake)
+    public void UpdateSnakePosition(Vector2 v2_SnakePosition, int i_SizeSnake)
     {
-        int i_IndexLin = (int) v2_SnakePosition.X;
-        int i_IndexCol = (int) v2_SnakePosition.Y;
+        int i_IndexLin = (int)v2_SnakePosition.X;
+        int i_IndexCol = (int)v2_SnakePosition.Y;
         int i_IndexBoard = i_Board[i_IndexCol, i_IndexLin];
-        
+
         if (i_SizeSnake == 1)
             i_Board[i_IndexCol, i_IndexLin] = (i_IndexBoard == 0) ? 1 : 0;
-        
+
         else if (i_SizeSnake == 2)
             i_Board[i_IndexCol, i_IndexLin] = (i_IndexBoard < 2) ? i_IndexBoard + 1 : 0;
 
@@ -94,15 +88,14 @@ public class Board
 
     public bool CheckCollision(Vector2 v2_SnakePosition, bool b_isSnake)
     {
-        int i_IndexLin = (int) v2_SnakePosition.X;
-        int i_IndexCol = (int) v2_SnakePosition.Y;
+        int i_IndexLin = (int)v2_SnakePosition.X;
+        int i_IndexCol = (int)v2_SnakePosition.Y;
 
         // First check if the head of the snake is hitting outside of the board
         if (i_IndexCol < 0 || i_IndexCol >= GameInfo.i_nbCol || i_IndexLin < 0 || i_IndexLin >= GameInfo.i_nbLin)
         {
             if (b_isSnake) CollisionBorder?.Invoke();
 
-            //Console.WriteLine("Condition on the CheckCollision trigger by the hitting outside " + i_IndexCol + " " + i_IndexLin);
             return false;
         }
         else
@@ -112,34 +105,27 @@ public class Board
             // Then check if the head of the snake is hitting his body or opponent body
             if (i_indexCell > 0 && i_indexCell < 4)
             {
-                if (b_isSnake) 
-                    CollisionSnake?.Invoke();
+                if (b_isSnake) CollisionSnake?.Invoke();
 
-                //Console.WriteLine("Condition on the CheckCollision trigger by the hitting his body " + i_indexCell);
                 return false;
             }
             else if (i_indexCell > 20 && i_indexCell < 29)
             {
-                if (b_isSnake) 
-                    CollisionCollider?.Invoke();
+                if (b_isSnake) CollisionCollider?.Invoke();
 
                 return false;
             }
             else if (i_indexCell > 30 && i_indexCell < 34)
             {
-                if (b_isSnake) 
-                    CollisionOpponent?.Invoke();
+                if (b_isSnake) CollisionOpponent?.Invoke();
 
-                //Console.WriteLine("Condition on the CheckCollision trigger by the hitting the oppononent body " + i_indexCell);
                 return false;
             }
 
             // Then check if the head of the snake is hitting an object
             if (i_indexCell == 10)
             {
-                //Console.WriteLine("Condition on the CheckCollision trigger by the hitting the Apple " + i_indexCell);
-
-                if (b_isSnake) 
+                if (b_isSnake)
                 {
                     CollisionApple?.Invoke();
                     i_Board[i_IndexCol, i_IndexLin] = 0;

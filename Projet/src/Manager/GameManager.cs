@@ -1,29 +1,20 @@
 
-public class GameManager
-{
-    #region Instance
-    private static GameManager? instance;
-    public static GameManager Instance
-    {
-        get
-        {
-            instance ??= new GameManager();
-            return instance;
-        }
-    }
-    #endregion
-    
-    private CharacterManager? characterManager;
-    private NotificationManager? notificationManager;
+// Passer en classe static
 
-    public void InitGame()
+public static class GameManager
+{
+    private static CharacterManager? characterManager;
+    private static NotificationManager? notificationManager;
+
+    public static void InitGame()
     {
         Console.WriteLine("Initialization New Game");
+        GameInfo.SetNbCharacterTotal();
         characterManager = new();
         notificationManager = new();
     }
 
-    public void UpdateGameManager()
+    public static void UpdateGameManager()
     {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
         characterManager.UpdateCharacters();
@@ -31,28 +22,23 @@ public class GameManager
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
 
-    public void GameLostTimer()
+    public static void GameLostTimer()
     {
         Console.WriteLine("Timer is down");
         GameState.Instance.ChangeScene("gameover");
     }
 
-    public void GameLostCollision()
+    public static void GameLostCollision()
     {
         Console.WriteLine("Lost due to a collision");
         GameState.Instance.ChangeScene("gameover");
     }
 
-    public void DrawGame()
+    public static void DrawGame()
     {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
         characterManager.DrawCharacters();
         notificationManager.DrawNotification();
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-    }
-
-    public void Close()
-    {
-        
     }
 }

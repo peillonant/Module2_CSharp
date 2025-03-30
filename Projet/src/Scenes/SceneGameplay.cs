@@ -13,21 +13,21 @@ public class SceneGameplay : Scene
     {
         if (b_LaunchNewGame)
         {
-            GameManager.Instance.InitGame();
+            GameManager.InitGame();
         }
-        
+
         base.Show();
     }
 
     public override void Draw()
     {
-        GameManager.Instance.DrawGame();
+        GameManager.DrawGame();
         base.Draw();
     }
 
     public override void Update()
     {
-        GameManager.Instance.UpdateGameManager();
+        GameManager.UpdateGameManager();
         base.Update();
     }
 }

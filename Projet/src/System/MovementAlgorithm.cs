@@ -1,10 +1,4 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using Raylib_cs;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Data;
-using System.Diagnostics;
 
 public class MovementAlgorithm
 {
@@ -17,18 +11,17 @@ public class MovementAlgorithm
     private float f_Timer = 0;
     private bool b_CheckAlgo = true;
     private bool b_IsTargettingBonus;
-    
+
 
     #region Encapsulation
     public Board GetBoard() => board;
     public Snake GetSnake() => snake;
     public int GetLevel() => i_EnemyLevel;
     public SnakeBrain GetSnakeBrain() => snakeBrain;
-    public Pathfinder GetPathfinder() => pathfinder;
     #endregion
 
-    public MovementAlgorithm (Board localBoard, ref Snake localSnake, int localLevel)
-    {   
+    public MovementAlgorithm(Board localBoard, Snake localSnake, int localLevel)
+    {
         board = localBoard;
         snake = localSnake;
         i_EnemyLevel = localLevel;
@@ -39,8 +32,8 @@ public class MovementAlgorithm
     // Function called by Enemy script to launch the Algorithm on the Update methode
     public void LaunchAlgorithm()
     {
-        b_CheckAlgo = GenericFunction.Instance.UpdateTimer(ref f_Timer);
-        
+        b_CheckAlgo = GenericFunction.UpdateTimer(ref f_Timer);
+
         if (b_CheckAlgo)
         {
             if (CheckToLaunchPathfinder())
@@ -51,7 +44,7 @@ public class MovementAlgorithm
 
                 // Create the graph that contains all element around the head of the Snake with distance available
                 pathfinder.CreateGraph(this);
-                
+
                 i_PathIndex = 0;
 
                 pathfinder.CreatePathToTarget(SnakeTarget());
@@ -61,8 +54,8 @@ public class MovementAlgorithm
 
             UpdateDirectionSnake();
 
-            i_PathIndex++;     
-            
+            i_PathIndex++;
+
             b_CheckAlgo = false;
         }
     }
@@ -90,26 +83,26 @@ public class MovementAlgorithm
     {
         if (!b_IsTargettingBonus)
             return Raylib.GetRandomValue(1, snakeBrain.i_ValueMax) > snakeBrain.i_ThresholdChangeDirectionBonusTargeted;
-    
+
         else
             return Raylib.GetRandomValue(1, snakeBrain.i_ValueMax) > snakeBrain.i_ThresholdChangeDirection;
     }
-    
+
     // Method that will generate a Random number to check if the snake has a Priorisation regarding Bonus and See obstacle
     private void SnakeView()
     {
         int tmp = Raylib.GetRandomValue(1, snakeBrain.i_ValueMax);
-        
+
         // First part, we manage the Priorisation [CAN BE OPTIMIZE LATER TO HAVE A NEW DECISION REGARDING TIMER]
-        if (tmp <= snakeBrain.i_ThresholdApple)         snakeBrain.b_FocusApple = true;
-        else if (tmp <= snakeBrain.i_ThresholdBonus)    snakeBrain.b_FocusBonus = true;
-        
+        if (tmp <= snakeBrain.i_ThresholdApple) snakeBrain.b_FocusApple = true;
+        else if (tmp <= snakeBrain.i_ThresholdBonus) snakeBrain.b_FocusBonus = true;
+
         // Second part, we manage the view of obstacles
-        if (tmp <= snakeBrain.i_ThresholdBorder)   snakeBrain.b_CanSeeBorder = true;
-        if (tmp <= snakeBrain.i_ThresholdObstacle) snakeBrain.b_CanSeeObstacle = true;
-        if (tmp <= snakeBrain.i_ThresholdOwnBody)  snakeBrain.b_CanSeeOwnBody = true;
+        snakeBrain.b_CanSeeBorder = tmp <= snakeBrain.i_ThresholdBorder;
+        snakeBrain.b_CanSeeObstacle = tmp <= snakeBrain.i_ThresholdObstacle;
+        snakeBrain.b_CanSeeOwnBody = tmp <= snakeBrain.i_ThresholdOwnBody;
     }
-   
+
     // Method that will generate the target for the snake
     private int SnakeTarget()
     {
@@ -119,7 +112,7 @@ public class MovementAlgorithm
             i_IndexTarget = pathfinder.GetIndexCell(TypeCell.Apple);
         else if (snakeBrain.b_FocusBonus)
             i_IndexTarget = pathfinder.GetIndexCell(TypeCell.Bonus);
-    
+
         if (i_IndexTarget < 0)
             i_IndexTarget = Raylib.GetRandomValue(1, pathfinder.GetCurrentFrontier().Count - 1);
 
@@ -133,25 +126,25 @@ public class MovementAlgorithm
         // Compare position between the origin and the path
         if (i_PathIndex >= pathfinder.GetCurrentPath().Count)
         {
-            i_newDirection = Raylib.GetRandomValue(1,4);
+            i_newDirection = Raylib.GetRandomValue(1, 4);
             Console.WriteLine($"[MvtAlgorith] Weird issue here, with a PathIndex equal to {i_PathIndex} and the Path count is {pathfinder.GetCurrentPath().Count}");
-        }    
+        }
         else
             i_newDirection = ChangeDirection(pathfinder.GetCurrentPath()[i_PathIndex], pathfinder.GetCurrentPath()[i_PathIndex + 1]);
-        
+
         snake.ChangeDirection(i_newDirection);
     }
 
     // Method to compare both position to return the correct Direction
     private int ChangeDirection(Cell origin, Cell destination)
     {
-        if (origin.GetCellPosition().X > destination.GetCellPosition().X)
+        if (origin.GetCellPosition().Y > destination.GetCellPosition().Y)
             return 1;
-        else if (origin.GetCellPosition().Y < destination.GetCellPosition().Y)
-            return 2;
         else if (origin.GetCellPosition().X < destination.GetCellPosition().X)
+            return 2;
+        else if (origin.GetCellPosition().Y < destination.GetCellPosition().Y)
             return 3;
-        else if (origin.GetCellPosition().Y > destination.GetCellPosition().Y)
+        else if (origin.GetCellPosition().X > destination.GetCellPosition().X)
             return 4;
         else
             return 1;

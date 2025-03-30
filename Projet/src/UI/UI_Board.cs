@@ -38,22 +38,23 @@ public class UI_Board
         // Method linked to Info
         DrawTimer();
         DrawPosition();
+        if (characterOrigin.IsPlayer())
+        {
+            DrawNbPlayerRemaining();
+        }
 
     }
 
     private void DisplayBoardOutline()
     {
         // Display the floor of the board
-        int tmpWidth = (int) (GameInfo.i_SizeCell * GameInfo.i_nbCol * characterOrigin.GetZoom());
-        int tmpHeight = (int) (GameInfo.i_SizeCell * GameInfo.i_nbLin * characterOrigin.GetZoom());
+        int tmpWidth = (int)(GameInfo.i_SizeCell * GameInfo.i_nbCol * characterOrigin.GetZoom());
+        int tmpHeight = (int)(GameInfo.i_SizeCell * GameInfo.i_nbLin * characterOrigin.GetZoom());
         Color colorOutline;
         Rectangle recBoard = new(characterOrigin.GetPosition().X, characterOrigin.GetPosition().Y, tmpWidth, tmpHeight);
 
-        if (characterOrigin.GetBoard().IsPlayer())
-            colorOutline = Color.Black;
-        else
-            colorOutline = Color.Red;
-        
+        colorOutline = characterOrigin.IsPlayer() ? Color.Black : Color.Red;
+
         Raylib.DrawRectangleLinesEx(recBoard, 1f, colorOutline);
     }
 
@@ -61,20 +62,20 @@ public class UI_Board
     {
         if (characterOrigin.IsAlive())
         {
-            for (int i=0 ; i < GameInfo.i_nbCol; i++)
+            for (int i = 0; i < GameInfo.i_nbCol; i++)
             {
-                for (int j =0 ; j < GameInfo.i_nbLin; j++)
+                for (int j = 0; j < GameInfo.i_nbLin; j++)
                 {
                     // Display the floor of the board
                     float f_Zoom = characterOrigin.GetZoom();
-                    int tmpWidth = (int) (GameInfo.i_SizeCell * f_Zoom);
-                    int tmpHeight = (int) (GameInfo.i_SizeCell * f_Zoom);
-                    int tmpX = (int) (characterOrigin.GetPosition().X + ( i * tmpWidth));
-                    int tmpY = (int) (characterOrigin.GetPosition().Y + ( j * tmpHeight));
-                    
+                    int tmpWidth = (int)(GameInfo.i_SizeCell * f_Zoom);
+                    int tmpHeight = (int)(GameInfo.i_SizeCell * f_Zoom);
+                    int tmpX = (int)(characterOrigin.GetPosition().X + (i * tmpWidth));
+                    int tmpY = (int)(characterOrigin.GetPosition().Y + (j * tmpHeight));
+
                     Rectangle recCell = new(tmpX, tmpY, tmpWidth, tmpHeight);
 
-                    Vector2 v2_Pos = new (i,j);
+                    Vector2 v2_Pos = new(i, j);
 
                     // Then display the Entity if the cell is above 0
                     if (characterOrigin.GetBoard().GetValueBoard(v2_Pos) > 0)
@@ -92,28 +93,28 @@ public class UI_Board
         if (characterOrigin.IsAlive())
         {
             string s_TextTimer = characterOrigin.GetTimer().GetTimerLife().ToString();
-            int i_Font = (int) (20 * characterOrigin.GetZoom());
-            int tmpX , tmpY;
+            int i_Font = (int)(20 * characterOrigin.GetZoom());
+            int tmpX, tmpY;
             Color colorFont;
-            Vector2 v2_TextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), s_TextTimer , i_Font, 1);
+            Vector2 v2_TextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), s_TextTimer, i_Font, 1);
 
-            if (characterOrigin.GetBoard().IsPlayer())
+            if (characterOrigin.IsPlayer())
             {
-                tmpX = (int) Raylib.GetScreenWidth() / 2;
+                tmpX = (int)Raylib.GetScreenWidth() / 2;
                 tmpY = (int)(Raylib.GetScreenHeight() * 0.8f);
-                
+
                 colorFont = Color.LightGray;
-            }   
+            }
             else
-            {            
-                tmpX =  (int) (characterOrigin.GetPosition().X + (GameInfo.i_nbCol / 2 * GameInfo.i_SizeCell));
-                tmpY =  (int) (characterOrigin.GetPosition().Y + (GameInfo.i_nbLin / 2 * GameInfo.i_SizeCell));
+            {
+                tmpX = (int)(characterOrigin.GetPosition().X + (GameInfo.i_nbCol / 2 * GameInfo.i_SizeCell));
+                tmpY = (int)(characterOrigin.GetPosition().Y + (GameInfo.i_nbLin / 2 * GameInfo.i_SizeCell));
 
                 colorFont = Color.Black;
             }
 
-            tmpX -= (int) v2_TextSize.X / 2;
-            tmpY -= (int) v2_TextSize.Y / 2;
+            tmpX -= (int)v2_TextSize.X / 2;
+            tmpY -= (int)v2_TextSize.Y / 2;
 
             Raylib.DrawText(s_TextTimer, tmpX, tmpY, i_Font, colorFont);
         }
@@ -123,33 +124,58 @@ public class UI_Board
     {
 
         string s_TextPosition = characterOrigin.GetRanking().ToString();
-        int i_Font = (int) (20 * characterOrigin.GetZoom());
-        int tmpX , tmpY;
+        int i_Font = (int)(20 * characterOrigin.GetZoom());
+        int tmpX, tmpY;
         Color colorFont;
 
-        if (characterOrigin.GetBoard().IsPlayer())
+        if (characterOrigin.IsPlayer())
         {
-            s_TextPosition += " / " + GameInfo.Instance.GetNbPlayerTotal().ToString(); 
+            s_TextPosition += " / " + GameInfo.GetNbCharacterTotal().ToString();
 
-            tmpX = (int) Raylib.GetScreenWidth() / 2;
-            tmpY = (int) (Raylib.GetScreenHeight() * 0.2f);
-            
+            tmpX = (int)Raylib.GetScreenWidth() / 2;
+            tmpY = (int)(Raylib.GetScreenHeight() * 0.2f);
+
             colorFont = Color.LightGray;
-        }   
+        }
         else
-        {            
-            tmpX = (int) (characterOrigin.GetPosition().X + (GameInfo.i_nbCol / 2 * GameInfo.i_SizeCell));
-            tmpY =  characterOrigin.IsAlive() ? (int) (characterOrigin.GetPosition().Y + GameInfo.i_nbCol / 2 * GameInfo.i_SizeCell / 2) : (int) (characterOrigin.GetPosition().Y + GameInfo.i_nbLin * GameInfo.i_SizeCell / 2);
-            i_Font = characterOrigin.IsAlive() ? i_Font : (int) (i_Font * 1.5f);
+        {
+            tmpX = (int)(characterOrigin.GetPosition().X + (GameInfo.i_nbCol / 2 * GameInfo.i_SizeCell));
+            tmpY = characterOrigin.IsAlive() ? (int)(characterOrigin.GetPosition().Y + GameInfo.i_nbCol / 2 * GameInfo.i_SizeCell / 2) : (int)(characterOrigin.GetPosition().Y + GameInfo.i_nbLin * GameInfo.i_SizeCell / 2);
+            i_Font = characterOrigin.IsAlive() ? i_Font : (int)(i_Font * 1.5f);
 
             colorFont = characterOrigin.IsAlive() ? Color.Black : Color.Red;
         }
 
-        Vector2 v2_TextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), s_TextPosition , i_Font, 1);
+        Vector2 v2_TextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), s_TextPosition, i_Font, 1);
 
-        tmpX -= (int) v2_TextSize.X / 2;
-        tmpY -= (int) v2_TextSize.Y / 2;
+        tmpX -= (int)v2_TextSize.X / 2;
+        tmpY -= (int)v2_TextSize.Y / 2;
 
         Raylib.DrawText(s_TextPosition, tmpX, tmpY, i_Font, colorFont);
+    }
+
+    private void DrawNbPlayerRemaining()
+    {
+        string s_Text = "Player Alive";
+        string s_TextNbPlayer = GameInfo.GetNbCharacterAlive().ToString();
+        int i_Font = 30;
+        int tmpX, tmpY;
+
+        tmpX = (int)(Raylib.GetScreenWidth() / 2) - 150;
+        tmpY = (int)(Raylib.GetScreenHeight() * 0.2f);
+
+        Vector2 v2_TextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), s_TextNbPlayer, i_Font, 1);
+
+        tmpX -= (int)v2_TextSize.X / 2;
+        tmpY -= (int)v2_TextSize.Y / 2;
+
+        Raylib.DrawText(s_TextNbPlayer, tmpX, tmpY, i_Font, Color.LightGray);
+
+        v2_TextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), s_Text, i_Font, 1);
+
+        tmpX -= (int)v2_TextSize.X / 2;
+        tmpY -= (int)v2_TextSize.Y / 2;
+
+        Raylib.DrawText(s_Text, tmpX, (int)(tmpY - v2_TextSize.Y), i_Font, Color.LightGray);
     }
 }

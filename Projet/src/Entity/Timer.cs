@@ -8,7 +8,7 @@ public class Timer
     public event Action? TimerDown;
 
     public int GetTimerLife() => i_TimerLife;
-    public void TimerLoose() => i_TimerLife = -GameInfo.Instance.GetNbPlayerAlive();
+    public void TimerLoose() => i_TimerLife = -GameInfo.GetNbCharacterAlive();
 
     public void IncreaseTimer(int i_nbIncrease) => i_TimerLife += i_nbIncrease;
 
@@ -20,8 +20,8 @@ public class Timer
             TimerDown?.Invoke();
     }
 
-    private void DecreaseTimer() 
-    {   
+    private void DecreaseTimer()
+    {
         f_Timer += Raylib.GetFrameTime();
 
         if (f_Timer >= 1.0f)

@@ -1,60 +1,50 @@
-public class GameInfo
-{
-    #region Instanciation
-    private static GameInfo? instance;
-    public static GameInfo Instance
-    {
-        get
-        {
-            instance ??= new GameInfo();
-            return instance;
-        }
-    }
-    #endregion
+// Modify to class static
 
+public static class GameInfo
+{
     #region Variable Game
-    private int i_difficultyGame = 1;
-    private float f_SpeedSnake = 0.5f;
-    private int i_cptApple = 0;
-    private int i_NextLevelAppleNeeded = 2;
-    private int i_NbPlayerTotal;
-    private int i_NbPlayerAlive;
+    private static int i_difficultyGame = 1;
+    private static float f_SpeedSnake = 0.5f;
+    private static int i_cptApple = 0;
+    private static int i_NextLevelAppleNeeded = 2;
+    private static int i_NbPlayer;
+    private static int i_NbCharacterTotal;
+    private static int i_NbCharacterAlive;
     #endregion
 
     #region ConstVariable
     public const int i_nbCol = 20;
     public const int i_nbLin = 20;
     public const int i_SizeCell = 8;
-    public readonly float[] ratioCols_16 = [ 0.03f, 0.16f, 0.73f, 0.86f ];
-    public readonly float[] ratioLins_16 = [ 0.03f, 0.28f, 0.53f, 0.77f ];
-    public readonly float[] ratioCols_8 = [ 0.01f, 0.16f, 0.70f, 0.85f ];
-    public readonly float[] ratioLins_8 = [ 0.03f, 0.25f, 0.50f, 0.72f ];
-    public readonly float[] ratioCols_3 = [ 0.03f, 0.70f ];
-    public readonly float[] ratioLins_3 = [ 0.25f ];
+    public static float[] ratioCols_16 = [0.03f, 0.16f, 0.73f, 0.86f];
+    public static float[] ratioLins_16 = [0.03f, 0.28f, 0.53f, 0.77f];
+    public static float[] ratioCols_8 = [0.10f, 0.79f];
+    public static float[] ratioLins_8 = [0.03f, 0.28f, 0.53f, 0.77f];
+    public static float[] ratioCols_3 = [0.03f, 0.70f];
+    public static float[] ratioLins_3 = [0.25f];
     #endregion
 
     #region Event
-    public event Action? SpeedIncreased;
-    public event Action? NbPlayerAliveDecreased;
+    public static event Action? SpeedIncreased;
+    public static event Action? NbCharacterAliveDecreased;
     #endregion
 
     #region Encapsulation
-    public void SetDifficultyGame (int i_newDiffulty) => i_difficultyGame = i_newDiffulty;
-    public void SetNbPlayerTotal (int i_newNbPlayerTotal) => i_NbPlayerTotal = i_newNbPlayerTotal;
-    public void SetNbPlayerAlive (int i_newNbPlayerAlive) => i_NbPlayerAlive = i_newNbPlayerAlive;
-    public float GetSpeedSnake() => f_SpeedSnake;
-    public int GetDifficultyGame () => i_difficultyGame;
-    public int GetNbPlayerTotal() => i_NbPlayerTotal;
-    public int GetNbPlayerAlive() => i_NbPlayerAlive;
+    public static void SetDifficultyGame(int i_newDiffulty) => i_difficultyGame = i_newDiffulty;
+    public static float GetSpeedSnake() => f_SpeedSnake;
+    public static int GetDifficultyGame() => i_difficultyGame;
+    public static int GetNbCharacterTotal() => i_NbCharacterTotal;
+    public static int GetNbCharacterAlive() => i_NbCharacterAlive;
+    public static int GetNbPlayer() => i_NbPlayer;
     #endregion
 
-    public void DecreaseNbPlayerAlive()
+    public static void DecreaseNbCharacterAlive()
     {
-        i_NbPlayerAlive--;
-        NbPlayerAliveDecreased?.Invoke();
+        i_NbCharacterAlive--;
+        NbCharacterAliveDecreased?.Invoke();
     }
 
-    public void IncreaseCptApple ()
+    public static void IncreaseCptApple()
     {
         i_cptApple++;
         if (i_cptApple == i_NextLevelAppleNeeded)
@@ -64,5 +54,21 @@ public class GameInfo
 
             SpeedIncreased?.Invoke();
         }
-    } 
+    }
+
+    public static void SetNbCharacterTotal(int i_newNBPlayer = 1)
+    {
+        i_NbPlayer = i_newNBPlayer;
+
+        if (i_difficultyGame == 1)
+            i_NbCharacterTotal = 17;        // 1 Table
+        else if (i_difficultyGame == 2)
+            i_NbCharacterTotal = 51;        // 3 Tables
+        else if (i_difficultyGame == 3)
+            i_NbCharacterTotal = 85;        // 5 tables
+        else
+            i_NbCharacterTotal = 170;       // 10 Tables
+
+        i_NbCharacterAlive = i_NbCharacterTotal;
+    }
 }

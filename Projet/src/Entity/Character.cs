@@ -1,7 +1,4 @@
-using System.Diagnostics;
-using System.IO.Compression;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Raylib_cs;
 
 public abstract class Character
@@ -10,12 +7,13 @@ public abstract class Character
     protected Snake characterSnake;
     protected Timer characterTimer = new();
     protected UI_Board UI_Board;
+    protected Vector2 v2_Position;
+    protected bool b_isPlayer;
     protected int i_Ranking;
     protected bool b_StillAlive = true;
-    protected Vector2 v2_Position;
     protected float f_Zoom = 1;
     protected int i_IndexTable = -1;
-    protected int i_PositionOnTable; // Can be optimize later (Maybe with an Entity)
+    protected int i_PositionOnTable;
     protected bool b_CanBeDisplay = true;
     protected bool b_IsDisplayed = false;
 
@@ -29,15 +27,16 @@ public abstract class Character
         // 1 = Top, 2 = Right, 3 = Bottom, 4 = Left
         characterSnake = new(Raylib.GetRandomValue(1, 4));
 
-        UI_Board = new(this);             
-        
-        SubscriptionEvent(); 
+        UI_Board = new(this);
+
+        SubscriptionEvent();
     }
 
     #region Getter
     public Board GetBoard() => characterBoard;
     public Snake GetSnake() => characterSnake;
     public Timer GetTimer() => characterTimer;
+    public bool IsPlayer() => b_isPlayer;
     public bool IsAlive() => b_StillAlive;
     public int GetRanking() => i_Ranking;
     public Vector2 GetPosition() => v2_Position;
@@ -50,8 +49,6 @@ public abstract class Character
 
     #region Setter
     public void SetRanking(int i_newRanking) => i_Ranking = i_newRanking;
-    public void SetPosition(Vector2 v2_newPosition) => v2_Position = v2_newPosition;
-    public void SetZoom(float f_newZoom) => f_Zoom = f_newZoom;
     public void SetTable(int i_newIndexTable) => i_IndexTable = i_newIndexTable;
     public void SetPositionOnTable(int i_newPosition) => i_PositionOnTable = i_newPosition;
     public void SetCanBeDisplay(bool b_newDisplay) => b_CanBeDisplay = b_newDisplay;
@@ -78,8 +75,8 @@ public abstract class Character
     {
         characterSnake.IncreaseSize(1);
         characterBoard.GenerateNewApple();
-        characterTimer.IncreaseTimer(10);
-        GameInfo.Instance.IncreaseCptApple();
+        characterTimer.IncreaseTimer(5);
+        GameInfo.IncreaseCptApple();
     }
 
     protected abstract void OnTimerDown();
@@ -90,57 +87,60 @@ public abstract class Character
     {
         characterSnake.UpdateSnakeMovement(characterBoard);
         characterTimer.UpdateTimer();
+        if (b_IsDisplayed)
+            UpdatePositionBoard();
     }
 
-    protected void UpdatePositionBoard()
+    private void UpdatePositionBoard()
     {
-        if (characterBoard.IsPlayer())
+        if (b_isPlayer)
         {
-            f_Zoom = (GameInfo.Instance.GetNbPlayerAlive() <= 3) ? 2.5f : 2;
-            v2_Position.X = (int) (Raylib.GetScreenWidth() / 2 - (GameInfo.i_nbCol / 2 * GameInfo.i_SizeCell * f_Zoom));
-            v2_Position.Y = (int) (Raylib.GetScreenHeight() / 2 - (GameInfo.i_nbLin / 2 * GameInfo.i_SizeCell * f_Zoom));
+            f_Zoom = (GameInfo.GetNbCharacterAlive() <= 3) ? 2.5f : 2;
+            v2_Position.X = (int)(Raylib.GetScreenWidth() / 2 - (GameInfo.i_nbCol / 2 * GameInfo.i_SizeCell * f_Zoom));
+            v2_Position.Y = (int)(Raylib.GetScreenHeight() / 2 - (GameInfo.i_nbLin / 2 * GameInfo.i_SizeCell * f_Zoom));
         }
         else
         {
             int tmpIndexCol, tmpIndexLin;
             float f_ratioCol, f_ratioLin;
 
-            if (GameInfo.Instance.GetNbPlayerAlive() <= 3)  // Display 2 Enemies (1 each side)
+            if (GameInfo.GetNbCharacterAlive() <= 3)  // Display 2 Enemies (1 each side)
             {
                 tmpIndexCol = (i_PositionOnTable % 2 == 1) ? 0 : 1;
                 tmpIndexLin = 0;
                 f_Zoom = 2;
 
-                f_ratioCol = GameInfo.Instance.ratioCols_3[tmpIndexCol];
-                f_ratioLin = GameInfo.Instance.ratioLins_3[tmpIndexLin];
+                f_ratioCol = GameInfo.ratioCols_3[tmpIndexCol];
+                f_ratioLin = GameInfo.ratioLins_3[tmpIndexLin];
             }
-            else if (GameInfo.Instance.GetNbPlayerAlive() <= 9) // Display 8 Enemies (4 each side, quincunx pattern)
+            else if (GameInfo.GetNbCharacterAlive() <= 9) // Display 8 Enemies (4 each side)
             {
 
-                if (i_PositionOnTable < 4)
-                    tmpIndexCol = (i_PositionOnTable % 2 == 0) ? 1 : 0;
-                else
-                    tmpIndexCol = (i_PositionOnTable % 2 == 0) ? 2 : 3;
+                tmpIndexCol = i_PositionOnTable % 2;
+                tmpIndexLin = i_PositionOnTable / 2;
 
-                tmpIndexLin = i_PositionOnTable % 4;
-
-                f_ratioCol = GameInfo.Instance.ratioCols_8[tmpIndexCol];
-                f_ratioLin = GameInfo.Instance.ratioLins_8[tmpIndexLin];
-            }   
+                f_ratioCol = GameInfo.ratioCols_8[tmpIndexCol];
+                f_ratioLin = GameInfo.ratioLins_8[tmpIndexLin];
+            }
             else  // Display 16 Enemies (8 each side, with a 2 column of 4 lines)
             {
-                // To modify
                 tmpIndexCol = i_PositionOnTable % 4;
-                tmpIndexLin = (int) (i_PositionOnTable - 1) / 4;    
-                
-                f_ratioCol = GameInfo.Instance.ratioCols_16[tmpIndexCol];
-                f_ratioLin = GameInfo.Instance.ratioLins_16[tmpIndexLin];
+                tmpIndexLin = i_PositionOnTable / 4;
+
+                f_ratioCol = GameInfo.ratioCols_16[tmpIndexCol];
+                f_ratioLin = GameInfo.ratioLins_16[tmpIndexLin];
             }
 
-            v2_Position.X = (int) (Raylib.GetScreenWidth() * f_ratioCol);
-            v2_Position.Y = (int) (Raylib.GetScreenHeight() * f_ratioLin);
+            v2_Position.X = (int)(Raylib.GetScreenWidth() * f_ratioCol);
+            v2_Position.Y = (int)(Raylib.GetScreenHeight() * f_ratioLin);
         }
     }
 
-    public abstract void DrawBoard();
+    public void DrawBoard()
+    {
+        if (b_IsDisplayed)
+        {
+            UI_Board.DrawBoard();
+        }
+    }
 }

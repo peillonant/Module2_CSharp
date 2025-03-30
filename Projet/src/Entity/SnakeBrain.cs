@@ -36,9 +36,9 @@ public struct SnakeBrain
     {
         for (int i = 1; i < i_EnemyLevel; i++)
         {
-            i_ValueMax = (int) (i_ValueMax * f_ValueFactor);
-            i_ThresholdApple = (int) (i_ThresholdApple * f_ThresholdFactor);
-            i_ThresholdBonus = (int) (i_ThresholdBonus * f_ThresholdFactor);
+            i_ValueMax = (int)(i_ValueMax * f_ValueFactor);
+            i_ThresholdApple = (int)(i_ThresholdApple * f_ThresholdFactor);
+            i_ThresholdBonus = (int)(i_ThresholdBonus * f_ThresholdFactor);
         }
     }
 
@@ -46,18 +46,18 @@ public struct SnakeBrain
     {
         for (int i = 1; i < i_EnemyLevel; i++)
         {
-            i_ThresholdObstacle = (int) (i_ThresholdObstacle * f_ThresholdFactor);
-            i_ThresholdBorder = (int) (i_ThresholdBorder * f_ThresholdFactor);
-            i_ThresholdOwnBody = (int) (i_ThresholdOwnBody * f_ThresholdFactor);
+            i_ThresholdObstacle = (int)(i_ThresholdObstacle * f_ThresholdFactor);
+            i_ThresholdBorder = (int)(i_ThresholdBorder * f_ThresholdFactor);
+            i_ThresholdOwnBody = (int)(i_ThresholdOwnBody * f_ThresholdFactor);
         }
     }
 
     private void ComputeValueChangeDirection(int i_EnemyLevel)
-    {       
+    {
         for (int i = 1; i < i_EnemyLevel; i++)
         {
-            i_ThresholdChangeDirection = Math.Min( (int) (i_ThresholdChangeDirection * f_ThresholdFactor), i_ValueMax);
-            i_ThresholdChangeDirectionBonusTargeted = Math.Min( (int) (i_ThresholdChangeDirectionBonusTargeted * f_ThresholdFactor), i_ValueMax);
+            i_ThresholdChangeDirection = Math.Min((int)(i_ThresholdChangeDirection * f_ThresholdFactor), i_ValueMax);
+            i_ThresholdChangeDirectionBonusTargeted = Math.Min((int)(i_ThresholdChangeDirectionBonusTargeted * f_ThresholdFactor), i_ValueMax);
         }
     }
 }

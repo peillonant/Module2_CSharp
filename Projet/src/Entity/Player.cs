@@ -7,34 +7,22 @@ public class Player : Character
     private bool b_CanMove;
     private int i_newDirection;
 
-    public Player ()
+    public Player() : base()
     {
-        // Initiation of the board
-        characterBoard = new Board(true);
-
-        // Position the Snake on the playerBoard at the beginning
-        characterBoard.AddObject(new(9, 9), 1);
-
-        // 1 = Top, 2 = Right, 3 = Bottom, 4 = Left
-        characterSnake = new(Raylib.GetRandomValue(1, 4));         
         i_newDirection = characterSnake.GetDirection();
-
-        // Init the UI_Board linked to the User
-        UI_Board = new(this);
-        
-        SubscriptionEvent();
+        b_IsDisplayed = true;
+        b_isPlayer = true;
     }
 
     public override void UpdatePlayer()
     {
         InputManagerUser();
         base.UpdatePlayer();
-        UpdatePositionBoard();
     }
 
     private void InputManagerUser()
     {
-        b_CanMove = GenericFunction.Instance.UpdateTimer(ref f_Timer);
+        b_CanMove = GenericFunction.UpdateTimer(ref f_Timer);
 
         if (Raylib.IsKeyPressed(KeyboardKey.W) || Raylib.IsKeyPressed(KeyboardKey.Up) && characterSnake.GetDirection() != 3)
             i_newDirection = 1;
@@ -55,16 +43,11 @@ public class Player : Character
 
     protected override void OnTimerDown()
     {
-        GameManager.Instance.GameLostTimer();
+        GameManager.GameLostTimer();
     }
 
     protected override void OnCollisionLost()
     {
-        GameManager.Instance.GameLostCollision();
-    }
-
-    public override void DrawBoard()
-    {
-        UI_Board.DrawBoard();
+        GameManager.GameLostCollision();
     }
 }

@@ -1,28 +1,38 @@
 using System.Diagnostics;
+using Raylib_cs;
 
 public class RankingGame
 {
     private Character[] tabCharacter;
+    private float f_TimerRanking = 2f;
+    private readonly float f_DelayTimerRanking = 1f;
 
     public RankingGame(Character[] originListCharacter)
-    {   
+    {
         tabCharacter = new Character[originListCharacter.Length];
 
-        for (int i = 0; i < originListCharacter.Length; i ++ )
+        for (int i = 0; i < originListCharacter.Length; i++)
         {
             tabCharacter[i] = originListCharacter[i];
         }
+
+        GameInfo.NbCharacterAliveDecreased += UpdateRanking;
     }
 
     public void UpdateRanking()
     {
-        Array.Sort(tabCharacter, new CompareTimer());
+        f_TimerRanking += Raylib.GetFrameTime();
 
-        //listCharacter.Sort(0, GameInfo.Instance.GetNbPlayerTotal(), new CompareTimer());
-
-        for (int i = 0; i < tabCharacter.Length; i++)
+        if (f_TimerRanking >= f_DelayTimerRanking)
         {
-            tabCharacter[i].SetRanking(i + 1);
+            f_TimerRanking = 0;
+
+            Array.Sort(tabCharacter, new CompareTimer());
+
+            for (int i = 0; i < tabCharacter.Length; i++)
+            {
+                tabCharacter[i].SetRanking(i + 1);
+            }
         }
     }
 }
