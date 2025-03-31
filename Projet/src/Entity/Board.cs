@@ -9,15 +9,15 @@ public class Board
 
     #region Event
     public event Action? CollisionApple;
-    //public event Action? CollisionBox;
+    public event Action? CollisionBonus;
     public event Action? CollisionCollider;
     public event Action? CollisionBorder;
     public event Action? CollisionSnake;
-    public event Action? CollisionOpponent;
+    //public event Action? CollisionOpponent;
     #endregion
 
     #region Variable
-    private readonly int[,] i_Board = new int[GameInfo.i_nbCol, GameInfo.i_nbLin]; // Update this to be an Array of cell
+    private readonly Cell[,] i_Board = new Cell[GameInfo.i_nbCol, GameInfo.i_nbLin]; // Update this to be an Array of cell
     #endregion
 
     public Board()
@@ -26,26 +26,26 @@ public class Board
         {
             for (int j = 0; j < GameInfo.i_nbCol; j++)
             {
-                i_Board[i, j] = 0;
+                i_Board[i, j] = new(TypeCell.None);
             }
         }
 
         GenerateNewApple();
     }
 
-    public void AddObject(Vector2 v2_PositionObjectToAdd, int i_IndexObject) => i_Board[(int)v2_PositionObjectToAdd.Y, (int)v2_PositionObjectToAdd.X] = i_IndexObject;
+    public void AddObject(Vector2 v2_PositionObjectToAdd, TypeCell newTypeCell) => i_Board[(int)v2_PositionObjectToAdd.Y, (int)v2_PositionObjectToAdd.X].UpdateCell(newTypeCell);
 
-    public void RemoveObject(Vector2 v2_PositionObjectToRemove) => i_Board[(int)v2_PositionObjectToRemove.Y, (int)v2_PositionObjectToRemove.X] = 0;
+    public void RemoveObject(Vector2 v2_PositionObjectToRemove) => i_Board[(int)v2_PositionObjectToRemove.Y, (int)v2_PositionObjectToRemove.X].UpdateCell(TypeCell.None);
 
-    public int GetValueBoard(Vector2 v2_PositionToReturn)
+    public TypeCell GetValueBoard(Vector2 v2_PositionToReturn)
     {
         int i_IndexLin = (int)v2_PositionToReturn.X;
         int i_IndexCol = (int)v2_PositionToReturn.Y;
 
         if (i_IndexCol < 0 || i_IndexCol >= GameInfo.i_nbCol || i_IndexLin < 0 || i_IndexLin >= GameInfo.i_nbLin)
-            return -1;
+            return TypeCell.Border;
         else
-            return i_Board[i_IndexCol, i_IndexLin];
+            return i_Board[i_IndexCol, i_IndexLin].GetTypeCell();
     }
 
     // Methode to generate the position of the new Apple on the map
@@ -67,25 +67,44 @@ public class Board
 
         } while (!b_PositionValidated);
 
-        AddObject(v2_PositionApple, 10);
+        AddObject(v2_PositionApple, TypeCell.Apple);
     }
 
     public void UpdateSnakePosition(Vector2 v2_SnakePosition, int i_SizeSnake)
     {
         int i_IndexLin = (int)v2_SnakePosition.X;
         int i_IndexCol = (int)v2_SnakePosition.Y;
-        int i_IndexBoard = i_Board[i_IndexCol, i_IndexLin];
+        Cell cell = i_Board[i_IndexCol, i_IndexLin];
 
         if (i_SizeSnake == 1)
-            i_Board[i_IndexCol, i_IndexLin] = (i_IndexBoard == 0) ? 1 : 0;
+        {
+            if (cell.GetTypeCell() == TypeCell.None)
+                cell.UpdateCell(TypeCell.OwnBodyHead);
+            else
+                cell.UpdateCell(TypeCell.None);
+        }
 
         else if (i_SizeSnake == 2)
-            i_Board[i_IndexCol, i_IndexLin] = (i_IndexBoard < 2) ? i_IndexBoard + 1 : 0;
-
+        {
+            if ((int) cell.GetTypeCell() < 2)
+            {
+                cell.UpdateCell(cell.GetTypeCell() + 1);
+            }
+            else
+                cell.UpdateCell(TypeCell.None);
+        }
         else if (i_SizeSnake >= 3)
-            i_Board[i_IndexCol, i_IndexLin] = (i_IndexBoard < 3) ? i_IndexBoard + 1 : 0;
+        {
+            if ((int)cell.GetTypeCell() < 3)
+            {
+                cell.UpdateCell(cell.GetTypeCell() + 1);
+            }
+            else
+                cell.UpdateCell(TypeCell.None);
+        }
     }
 
+    // Called by the Snake to check the collision but also by function that add a new object on the board (Apple, Bonus, Collider)
     public bool CheckCollision(Vector2 v2_SnakePosition, bool b_isSnake)
     {
         int i_IndexLin = (int)v2_SnakePosition.X;
@@ -100,40 +119,49 @@ public class Board
         }
         else
         {
-            int i_indexCell = i_Board[i_IndexCol, i_IndexLin];
+            Cell cell = i_Board[i_IndexCol, i_IndexLin];
 
-            // Then check if the head of the snake is hitting his body or opponent body
-            if (i_indexCell > 0 && i_indexCell < 4)
+            // check if the head of the snake is hitting his body or opponent body
+            if ((int) cell.GetTypeCell() > 0 && (int) cell.GetTypeCell() < 4)
             {
                 if (b_isSnake) CollisionSnake?.Invoke();
 
                 return false;
             }
-            else if (i_indexCell > 20 && i_indexCell < 29)
+            
+            if (cell.GetTypeCell() == TypeCell.Collision)
             {
                 if (b_isSnake) CollisionCollider?.Invoke();
 
                 return false;
             }
-            else if (i_indexCell > 30 && i_indexCell < 34)
-            {
-                if (b_isSnake) CollisionOpponent?.Invoke();
 
-                return false;
-            }
-
-            // Then check if the head of the snake is hitting an object
-            if (i_indexCell == 10)
+            // check if the head of the snake is hitting an Apple
+            if (cell.GetTypeCell() == TypeCell.Apple)
             {
                 if (b_isSnake)
                 {
                     CollisionApple?.Invoke();
-                    i_Board[i_IndexCol, i_IndexLin] = 0;
+                    cell.UpdateCell(TypeCell.None);
                     return true;
                 }
                 else
                     return false;
             }
+
+            // check if the head of the snake is hitting a Bonus
+            if (cell.GetTypeCell() == TypeCell.Bonus)
+            {
+                if (b_isSnake)
+                {
+                    CollisionBonus?.Invoke();
+                    cell.UpdateCell(TypeCell.None);
+                    return true;
+                }
+                else 
+                    return false;
+            }
+
             return true;
         }
     }

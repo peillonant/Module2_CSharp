@@ -1,92 +1,60 @@
-using System.Numerics;
-using Raylib_cs;
-
 public enum TypeCell : byte
 {
     None,
+    OwnBodyHead,
+    OwnBodyBody,
+    OwnBodyTail,
     Bonus,
     Apple,
     Malus,
     Collision,
-    OwnBody,
     Border,
     Count
 }
 
-// Create a class Cell that contain
-// - typeCell, b_IsOccupied
-
-// Then transform this class into Pathfinding Cell that heritate from cell with the information added
-
 public class Cell
 {
     private TypeCell typeCell;
+    protected bool b_IsOccupied;
 
-    private Cell? parent;
-    private Cell? connectedCell;
-    private Vector2 v2_CellPosition;
-    private int i_cost;
-
-    bool b_IsOccupied;
-    private bool b_InFrontier = false;
-    public bool b_CanBeReached { get { return !b_IsOccupied && b_InFrontier; } }
-
-    #region Encapsulation
-    // Setter
-    public void SetParentCell(Cell parent) => this.parent = parent;
-    public void SetConnectedCell(Cell connectedCell) => this.connectedCell = connectedCell;
-    public void SetCost(int cost) => this.i_cost = cost;
-    public void SetInFrontier(bool frontier) => this.b_InFrontier = frontier;
-
-    // Getter
-    public Cell? GetParentCell() => parent;
-    public Cell? GetConnectedCell() => connectedCell;
-    public Vector2 GetCellPosition() => v2_CellPosition;
-    public int GetCost() => i_cost;
-    public bool GetInFrontier() => b_InFrontier;
     public TypeCell GetTypeCell() => typeCell;
-    public bool GetIsOccupied() => b_IsOccupied;
-    #endregion
+    public bool IsOccupied() => b_IsOccupied;
 
-
-    public Cell(Vector2 v2_CellPosition, Board board)
+    public Cell(TypeCell newTypeCell)
     {
-        this.v2_CellPosition = v2_CellPosition;
-        parent = null;
-        connectedCell = null;
-
-        CheckIsOccupied(board);
+        typeCell = newTypeCell;
+        UpdateIsOccupied();
     }
 
-    private void CheckIsOccupied(Board board)
+    public void UpdateCell(TypeCell newTypeCell)
     {
-        int i_valueCell = board.GetValueBoard(v2_CellPosition);
+        typeCell = newTypeCell;
+        UpdateIsOccupied();
+    }
 
-        switch (i_valueCell)
+    public void UpdateIsOccupied()
+    {
+        switch (typeCell)
         {
-            case -1:    // Border
-                typeCell = TypeCell.Border;
+            case TypeCell.None:     // Nothing on the cell
+                b_IsOccupied = false;             
+                break;
+            case TypeCell.Border:    // Border
                 b_IsOccupied = true;
                 break;
-            case 0:     // Nothing on the cell
-                typeCell = TypeCell.None;
-                break;
-            case < 4:     // Body of the snake
-                typeCell = TypeCell.OwnBody;
+            case TypeCell.OwnBodyHead :     // Body of the snake
+            case TypeCell.OwnBodyBody :
+            case TypeCell.OwnBodyTail :
                 b_IsOccupied = true;
                 break;
-            case 10:    // Apple
-                typeCell = TypeCell.Apple;
+            case TypeCell.Apple:    // Apple
+            case TypeCell.Bonus:
+                b_IsOccupied = false;
                 break;
-            case 11:    // Boxe
-                typeCell = TypeCell.Bonus;
-                break;
-            case 20:    // Malus object
-                typeCell = TypeCell.Malus;
+            case TypeCell.Malus:    // Malus object
                 b_IsOccupied = true;
                 break;
-            case < 30:    // Collision object
-                typeCell = TypeCell.Collision;
+            case TypeCell.Collision:    // Collision object
                 b_IsOccupied = true;
                 break;
         }

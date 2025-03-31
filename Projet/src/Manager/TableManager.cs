@@ -57,7 +57,7 @@ public class TableManager
             do
             {
                 indexTable = Raylib.GetRandomValue(0, i_NbTable - 1);
-                b_TableFilled = tabTable[indexTable] < 16;
+                b_TableFilled = tabTable[indexTable] < 17;
 
             } while (!b_TableFilled);
 

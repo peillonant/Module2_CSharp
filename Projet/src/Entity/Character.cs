@@ -22,7 +22,7 @@ public abstract class Character
         characterBoard = new Board();
 
         // Position the Snake on the playerBoard at the beginning
-        characterBoard.AddObject(new(9, 9), 1);
+        characterBoard.AddObject(new(9, 9), TypeCell.OwnBodyHead);
 
         // 1 = Top, 2 = Right, 3 = Bottom, 4 = Left
         characterSnake = new(Raylib.GetRandomValue(1, 4));
@@ -68,7 +68,6 @@ public abstract class Character
         characterBoard.CollisionBorder += OnCollisionLost;
         characterBoard.CollisionCollider += OnCollisionLost;
         characterBoard.CollisionSnake += OnCollisionLost;
-        characterBoard.CollisionOpponent += OnCollisionLost;
     }
 
     private void CollisitionApple()

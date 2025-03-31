@@ -124,19 +124,21 @@ public class MovementAlgorithm
     {
         int i_newDirection;
         // Compare position between the origin and the path
-        if (i_PathIndex >= pathfinder.GetCurrentPath().Count)
+        if (i_PathIndex >= pathfinder.GetCurrentPath().Count - 1)
         {
             i_newDirection = Raylib.GetRandomValue(1, 4);
             Console.WriteLine($"[MvtAlgorith] Weird issue here, with a PathIndex equal to {i_PathIndex} and the Path count is {pathfinder.GetCurrentPath().Count}");
         }
         else
+        {
             i_newDirection = ChangeDirection(pathfinder.GetCurrentPath()[i_PathIndex], pathfinder.GetCurrentPath()[i_PathIndex + 1]);
+        } 
 
         snake.ChangeDirection(i_newDirection);
     }
 
     // Method to compare both position to return the correct Direction
-    private int ChangeDirection(Cell origin, Cell destination)
+    private static int ChangeDirection(PathfindingCell origin, PathfindingCell destination)
     {
         if (origin.GetCellPosition().Y > destination.GetCellPosition().Y)
             return 1;

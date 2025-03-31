@@ -10,18 +10,18 @@ public class UI_Board_Sprite
         colorCell.Add(1, Color.DarkBlue);       // Head of the snake
         colorCell.Add(2, Color.Blue);           // Body of the snake
         colorCell.Add(3, Color.SkyBlue);        // Tail of the snake
-        colorCell.Add(10, Color.Red);           // Apple
-        colorCell.Add(11, Color.Orange);        // Boxe
-        colorCell.Add(20, Color.Brown);         // Malus object 
-        colorCell.Add(21, Color.Black);         // Collision object
+        colorCell.Add(4, Color.Orange);        // Boxe
+        colorCell.Add(5, Color.Red);           // Apple
+        colorCell.Add(6, Color.Brown);         // Malus object 
+        colorCell.Add(7, Color.Black);         // Collision object
     }
 }
 
 public class UI_Board
 {
     #region Variable
-    private Character characterOrigin;
-    private UI_Board_Sprite ui_Board_Sprite = new();
+    private readonly Character characterOrigin;
+    private readonly UI_Board_Sprite ui_Board_Sprite = new();
     #endregion
 
     public UI_Board(Character characterOrigin)
@@ -78,9 +78,9 @@ public class UI_Board
                     Vector2 v2_Pos = new(i, j);
 
                     // Then display the Entity if the cell is above 0
-                    if (characterOrigin.GetBoard().GetValueBoard(v2_Pos) > 0)
+                    if ((int)characterOrigin.GetBoard().GetValueBoard(v2_Pos) > 0 && characterOrigin.GetBoard().GetValueBoard(v2_Pos) != TypeCell.Border)
                     {
-                        int i_IndexColor = characterOrigin.GetBoard().GetValueBoard(v2_Pos);
+                        int i_IndexColor = (int) characterOrigin.GetBoard().GetValueBoard(v2_Pos);
                         Raylib.DrawRectangleRec(recCell, ui_Board_Sprite.colorCell[i_IndexColor]);
                     }
                 }
