@@ -1,20 +1,15 @@
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using Raylib_cs;
-
 public class CharacterManager
 {
-    private Character[] tabCharacter;
-    private RankingGame rankingGame;
-    private TableManager tableManager;
+    private Character[]? tabCharacter;
 
     public CharacterManager()
     {
         CreateCharacters();
-#pragma warning disable CS8604 // Possible null reference argument.
-        rankingGame = new RankingGame(tabCharacter);
-        tableManager = new TableManager(tabCharacter);
-#pragma warning restore CS8604 // Possible null reference argument.
+        if (tabCharacter != null)
+        {
+            RankingGame.InitRankingGame(tabCharacter);
+            TableManager.InitTableManager(tabCharacter);
+        }
     }
 
     private void CreateCharacters()
@@ -32,22 +27,26 @@ public class CharacterManager
 
     public void UpdateCharacters()
     {
+        if (tabCharacter == null)
+            return; 
+        
         for (int i = 0; i < tabCharacter.Length; i++)
         {
             tabCharacter[i].UpdatePlayer();
         }
 
-        rankingGame.UpdateRanking();
-
-        // if (tabCharacter[0].GetTimer().GetTimerLife() < 59)
-        //     Debug.WriteLine("Plop");
+        RankingGame.UpdateRanking();
     }
 
     public void DrawCharacters()
-    {
+    {   
+        if (tabCharacter == null)
+            return; 
+
         for (int i = 0; i < tabCharacter.Length; i++)
         {
-            tabCharacter[i].DrawBoard();
+            if (tabCharacter[i].IsDisplayed())
+                UI_Board.DrawBoard(tabCharacter[i]);
         }
     }
 }

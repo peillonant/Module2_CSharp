@@ -1,66 +1,19 @@
 
 using System.Diagnostics;
-using Raylib_cs;
 
-public class GameState
+public static class GameState
 {
-    private Scene? currentScene;
-    private static GameState? instance;
-    public static GameState Instance
-    {
-        get
-        {
-            instance ??= new GameState();
-            return instance;
-        }
-    }
+    private static Scene? currentScene;
 
-    private Dictionary<string, Scene> scenes;
+    private static Dictionary<string, Scene> scenes = [];
 
-    public DebugMagic debugMagic = new DebugMagic();
-
-    public float masterVolume { get; private set; }
-    public bool fullScreen { get; private set; }
-
-    public void SetVolume(float volume)
-    {
-        masterVolume = volume;
-        Raylib.SetMasterVolume(masterVolume);
-    }
-
-    public GameState()
-    {
-        scenes = new Dictionary<string, Scene>();
-
-        OptionsFile optionsFile = new OptionsFile();
-        optionsFile.Load();
-
-        if (optionsFile.IsOptionExists("volume"))
-        {
-            float volume = optionsFile.GetOptionFloat("volume");
-            masterVolume = volume;
-        }
-        else
-        {
-            masterVolume = 0.8f;
-        }
-
-        // Mise en place du fullScreen
-        fullScreen = optionsFile.GetOptionBool("fullscreen");
-        if (fullScreen)
-        {
-            Debug.WriteLine("Passe en plein écran");
-            Raylib.ToggleFullscreen();
-        }
-    }
-
-    public void RegisterScene(string name, Scene scene)
+    public static void RegisterScene(string name, Scene scene)
     {
         scenes[name] = scene;
         scene.name = name;
     }
 
-    public void RemoveScene(string name)
+    public static void RemoveScene(string name)
     {
         if (scenes.ContainsKey(name))
         {
@@ -69,7 +22,7 @@ public class GameState
         }
     }
 
-    public void ChangeScene(string name)
+    public static void ChangeScene(string name)
     {
         if (scenes.ContainsKey(name))
         {
@@ -90,17 +43,22 @@ public class GameState
         }
     }
 
-    public void UpdateScene()
+    public static Scene RetrieveScene(string name)
+    {
+        return scenes[name];
+    }
+
+    public static void UpdateScene()
     {
         currentScene?.Update();
     }
 
-    public void DrawScene()
+    public static void DrawScene()
     {
         currentScene?.Draw();
     }
 
-    public void Close()
+    public static void Close()
     {
         foreach (var item in scenes)
         {

@@ -1,9 +1,21 @@
 using System.Numerics;
 using Raylib_cs;
 
-public class UI_Notification
+public static class UI_Notification_Color
 {
-    public void DrawNotifSpeed(Notification notificationToDisplay)
+    public static Dictionary<int, Color> colorBoardNotification = [];
+
+    public static void InitUI_Notification_Color()
+    {
+        colorBoardNotification.Add(1, Color.DarkBlue);              // Attacking
+        colorBoardNotification.Add(2, Color.Red);                   // Attacked
+        colorBoardNotification.Add(3, Color.DarkBrown);             // AttackedBy
+    }
+}
+
+public static class UI_Notification
+{
+    public static void DrawNotifText(NotificationText notificationToDisplay)
     {
         int i_Font = 20;
         int i_tmpPX = (int)notificationToDisplay.GetPosition().X;
@@ -18,5 +30,20 @@ public class UI_Notification
         i_tmpPY -= (int)v2_TextSize.Y / 2;
 
         Raylib.DrawText(notificationToDisplay.GetTextToDisplay(), i_tmpPX, i_tmpPY, i_Font, Color.SkyBlue);
+    }
+
+    public static void DrawNotifBoard(NotificationBoard notificationBoard)
+    {
+        // Display the floor of the board
+        int tmpWidth = (int)(GameInfo.i_SizeCell * GameInfo.i_nbCol * notificationBoard.f_Zoom);
+        int tmpHeight = (int)(GameInfo.i_SizeCell * GameInfo.i_nbLin * notificationBoard.f_Zoom);
+
+        Color colorOutline;
+        
+        Rectangle recBoard = new(notificationBoard.GetPosition().X, notificationBoard.GetPosition().Y, tmpWidth, tmpHeight);
+
+        colorOutline = UI_Notification_Color.colorBoardNotification[(int) notificationBoard.typeNotificationBoard];
+
+        Raylib.DrawRectangleLinesEx(recBoard, 2f, colorOutline);
     }
 }

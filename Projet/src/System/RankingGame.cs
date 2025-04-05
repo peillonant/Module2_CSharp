@@ -1,13 +1,13 @@
 using System.Diagnostics;
 using Raylib_cs;
 
-public class RankingGame
+public static class RankingGame
 {
-    private Character[] tabCharacter;
-    private float f_TimerRanking = 2f;
-    private readonly float f_DelayTimerRanking = 1f;
+    private static Character[]? tabCharacter;
+    private static float f_TimerRanking = 2f;
+    private static readonly float f_DelayTimerRanking = 1f;
 
-    public RankingGame(Character[] originListCharacter)
+    public static void InitRankingGame(Character[] originListCharacter)
     {
         tabCharacter = new Character[originListCharacter.Length];
 
@@ -19,7 +19,7 @@ public class RankingGame
         GameInfo.NbCharacterAliveDecreased += UpdateRanking;
     }
 
-    public void UpdateRanking()
+    public static void UpdateRanking()
     {
         f_TimerRanking += Raylib.GetFrameTime();
 
@@ -27,11 +27,14 @@ public class RankingGame
         {
             f_TimerRanking = 0;
 
-            Array.Sort(tabCharacter, new CompareTimer());
-
-            for (int i = 0; i < tabCharacter.Length; i++)
+            if (tabCharacter != null)
             {
-                tabCharacter[i].SetRanking(i + 1);
+                Array.Sort(tabCharacter, new CompareTimer());
+
+                for (int i = 0; i < tabCharacter.Length; i++)
+                {
+                    tabCharacter[i].SetRanking(i + 1);
+                }
             }
         }
     }

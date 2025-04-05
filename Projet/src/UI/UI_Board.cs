@@ -1,51 +1,47 @@
 using System.Numerics;
 using Raylib_cs;
 
-public class UI_Board_Sprite
+public static class UI_Board_Sprite
 {
-    public Dictionary<int, Color> colorCell = new Dictionary<int, Color>();
+    static Dictionary<int, Color> colorCell = [];
 
-    public UI_Board_Sprite()
+    public static void InitUI_Board_Sprite()
     {
-        colorCell.Add(1, Color.DarkBlue);       // Head of the snake
-        colorCell.Add(2, Color.Blue);           // Body of the snake
-        colorCell.Add(3, Color.SkyBlue);        // Tail of the snake
-        colorCell.Add(4, Color.Orange);        // Boxe
-        colorCell.Add(5, Color.Red);           // Apple
-        colorCell.Add(6, Color.Brown);         // Malus object 
-        colorCell.Add(7, Color.Black);         // Collision object
+        colorCell.Add(1, Color.DarkBlue);           // Head of the snake
+        colorCell.Add(2, Color.Blue);               // Body of the snake
+        colorCell.Add(3, Color.SkyBlue);            // Tail of the snake
+        colorCell.Add(4, Color.Red);                // Apple
+        colorCell.Add(5, Color.Orange);             // Bonus
+        colorCell.Add(6, Color.Brown);              // Malus object 
+        colorCell.Add(7, Color.DarkPurple);         // Collision object
+        colorCell.Add(8, Color.Black);              // New Board object
+        colorCell.Add(9, Color.Gray);               // Bomb
+    }
+
+    public static Color GetColorCell (int indexCell)
+    {
+        return colorCell[indexCell];
     }
 }
 
-public class UI_Board
+public static class UI_Board
 {
-    #region Variable
-    private readonly Character characterOrigin;
-    private readonly UI_Board_Sprite ui_Board_Sprite = new();
-    #endregion
-
-    public UI_Board(Character characterOrigin)
-    {
-        this.characterOrigin = characterOrigin;
-    }
-
-    public void DrawBoard()
+    public static void DrawBoard(Character characterOrigin)
     {
         // Method linked to Board
-        DisplayBoardOutline();
-        DisplayGrid();
+        DisplayBoardOutline(characterOrigin);
+        DisplayGrid(characterOrigin);
 
         // Method linked to Info
-        DrawTimer();
-        DrawPosition();
+        DrawTimer(characterOrigin);
+        DrawPosition(characterOrigin);
         if (characterOrigin.IsPlayer())
         {
             DrawNbPlayerRemaining();
         }
-
     }
 
-    private void DisplayBoardOutline()
+    private static void DisplayBoardOutline(Character characterOrigin)
     {
         // Display the floor of the board
         int tmpWidth = (int)(GameInfo.i_SizeCell * GameInfo.i_nbCol * characterOrigin.GetZoom());
@@ -58,7 +54,7 @@ public class UI_Board
         Raylib.DrawRectangleLinesEx(recBoard, 1f, colorOutline);
     }
 
-    private void DisplayGrid()
+    private static void DisplayGrid(Character characterOrigin)
     {
         if (characterOrigin.IsAlive())
         {
@@ -78,17 +74,17 @@ public class UI_Board
                     Vector2 v2_Pos = new(i, j);
 
                     // Then display the Entity if the cell is above 0
-                    if ((int)characterOrigin.GetBoard().GetValueBoard(v2_Pos) > 0 && characterOrigin.GetBoard().GetValueBoard(v2_Pos) != TypeCell.Border)
+                    if ((int)characterOrigin.GetBoard().GetValueBoard(v2_Pos) > 0)
                     {
                         int i_IndexColor = (int) characterOrigin.GetBoard().GetValueBoard(v2_Pos);
-                        Raylib.DrawRectangleRec(recCell, ui_Board_Sprite.colorCell[i_IndexColor]);
+                        Raylib.DrawRectangleRec(recCell, UI_Board_Sprite.GetColorCell(i_IndexColor));
                     }
                 }
             }
         }
     }
 
-    private void DrawTimer()
+    private static void DrawTimer(Character characterOrigin)
     {
         if (characterOrigin.IsAlive())
         {
@@ -120,7 +116,7 @@ public class UI_Board
         }
     }
 
-    private void DrawPosition()
+    private static void DrawPosition(Character characterOrigin)
     {
 
         string s_TextPosition = characterOrigin.GetRanking().ToString();
@@ -154,7 +150,7 @@ public class UI_Board
         Raylib.DrawText(s_TextPosition, tmpX, tmpY, i_Font, colorFont);
     }
 
-    private void DrawNbPlayerRemaining()
+    private static void DrawNbPlayerRemaining()
     {
         string s_Text = "Player Alive";
         string s_TextNbPlayer = GameInfo.GetNbCharacterAlive().ToString();
@@ -177,5 +173,52 @@ public class UI_Board
         tmpY -= (int)v2_TextSize.Y / 2;
 
         Raylib.DrawText(s_Text, tmpX, (int)(tmpY - v2_TextSize.Y), i_Font, Color.LightGray);
+    }
+
+    public static void DrawPowerDisplayed(Power? bonusDisplayed, Power? malusDisplayed)
+    {
+        // First display the square around the Power
+        int i_Width = 100;
+        int i_Height = 100;
+        int i_PY = (int)(Raylib.GetScreenHeight() * 0.8f);;
+        int i_PXBonus, i_PXMalus;
+        Rectangle recPower;
+
+        // Draw Rectangle for Bonus
+        i_PXBonus = Raylib.GetScreenWidth() / 2 - 150 - (i_Width / 2);
+        recPower = new(i_PXBonus, i_PY, i_Width, i_Height);
+        Raylib.DrawRectangleLinesEx(recPower, 2f, UI_Board_Sprite.GetColorCell(5));
+
+        // Draw Rectangle for Malus
+        i_PXMalus = Raylib.GetScreenWidth() / 2 + 150 - (i_Width / 2);
+        recPower = new(i_PXMalus, i_PY, i_Width, i_Height);
+        Raylib.DrawRectangleLinesEx(recPower, 2f, UI_Board_Sprite.GetColorCell(6));
+    
+        // Then display the text in the square of the Bonus if it's available
+        if (bonusDisplayed != null)
+            DrawTextPower(bonusDisplayed, UI_Board_Sprite.GetColorCell(5), i_PXBonus, i_PY, i_Width, i_Height);
+
+        // Then display the text in the square of the Malus if it's available
+        if (malusDisplayed != null)
+            DrawTextPower(malusDisplayed, UI_Board_Sprite.GetColorCell(6), i_PXMalus, i_PY, i_Width, i_Height);
+    }   
+
+    private static void DrawTextPower(Power powerDisplayed, Color colorFont, int i_PX, int i_PY, int i_Width, int i_Height)
+    {
+        int i_FontSize = 20;
+
+        string s_Text = powerDisplayed.GetNamePower();
+
+        Vector2 v2_TextSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), s_Text, i_FontSize, 1);
+        int i_tmpPY;
+        i_PX += (i_Width / 2) - (int)v2_TextSize.X / 2;
+        i_tmpPY = i_PY + (i_Height / 2) - (int)v2_TextSize.Y / 2;
+
+        Raylib.DrawText(s_Text, i_PX, i_tmpPY, i_FontSize, colorFont);
+    }
+
+    public static void DrawAppleEaten()
+    {
+        
     }
 }

@@ -111,7 +111,14 @@ public class MovementAlgorithm
         if (snakeBrain.b_FocusApple)
             i_IndexTarget = pathfinder.GetIndexCell(TypeCell.Apple);
         else if (snakeBrain.b_FocusBonus)
-            i_IndexTarget = pathfinder.GetIndexCell(TypeCell.Bonus);
+        {
+            int indexRandom = Raylib.GetRandomValue(1, 2);
+            i_IndexTarget = (indexRandom == 1) ? pathfinder.GetIndexCell(TypeCell.Bonus) : pathfinder.GetIndexCell(TypeCell.Malus);
+            
+            if (i_IndexTarget == -1)
+                i_IndexTarget = (indexRandom == 1) ? pathfinder.GetIndexCell(TypeCell.Malus) : pathfinder.GetIndexCell(TypeCell.Bonus);
+        }
+            
 
         if (i_IndexTarget < 0)
             i_IndexTarget = Raylib.GetRandomValue(1, pathfinder.GetCurrentFrontier().Count - 1);
