@@ -5,6 +5,7 @@ public class Obstacle : Power
     public Obstacle(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Malus;
+        typeMalus = TypeMalus.Obstacle;
         name = "Obstacle";
     }
 
@@ -19,8 +20,12 @@ public class Obstacle : Power
         else
         {
             List<Cell> cellAvailables = characterTargeted.GetBoard().GetCellAvailable();
-            int indexCell = Raylib.GetRandomValue(0, cellAvailables.Count - 1);    
-            cellAvailables[indexCell].UpdateCell(TypeCell.Collision);
+            
+            for (int i = 0; i < 5; i++)
+            {
+                int indexCell = Raylib.GetRandomValue(0, cellAvailables.Count - 1);    
+                cellAvailables[indexCell].UpdateCell(TypeCell.Collision);
+            }
         }
 
         NotificationBoardPower(characterTargeted, name);

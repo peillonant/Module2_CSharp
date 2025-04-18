@@ -3,49 +3,40 @@ using Raylib_cs;
 
 public class SceneOptions : Scene
 {
-
-    Button backButton = new Button
-    {
-        Rect = new Rectangle(10, 90, 200, 40),
-        Text = "Back",
-        Color = Color.White
-    };
+    Button? backButton;
 
     private ButtonsList buttonsList = new ButtonsList();
 
-    private bool isFullScreen;
-
-    public SceneOptions()
+    public override void Show()
     {
+        backButton = new Button
+        {
+            Rect = new Rectangle(10, 90, 200, 40),
+            Text = "Back",
+            Color = Color.White
+        };
+
         buttonsList.AddButton(backButton);
     }
 
-    public override void Show()
+    public override void Hide()
     {
-        base.Show();
+        backButton = null;
+        buttonsList.ClearList();
     }
 
     public override void Update()
     {
+        if (backButton == null) return;
+
         buttonsList.Update();
 
-        // if (Raylib.IsKeyPressed(KeyboardKey.F))
-        // {
-        //     isFullScreen = !isFullScreen;
-        // }
-
-        if (backButton.IsClicked && b_FromMenu)
-        {
-            GameState.ChangeScene("menu");
-        }
+        if (backButton.IsClicked && GameInfo.GetLaunchNewGame())
+            Services.Get<IScenesManager>().Show<SceneMenu>(); 
+                
+        if (backButton.IsClicked && !GameInfo.GetLaunchNewGame())
+            Services.Get<IScenesManager>().Show<ScenePause>(); 
         
-        if (backButton.IsClicked && !b_FromMenu)
-        {
-            GameState.ChangeScene("pause");
-        }
-        
-
-        base.Update();
     }
 
     public override void Draw()
@@ -58,18 +49,5 @@ public class SceneOptions : Scene
         Raylib.DrawText($"Volume : {pourcent} %", 10, 35, 20, Color.Black);
         
         buttonsList.Draw();
-
-        base.Draw();
-    }
-
-    public override void Hide()
-    {
-        base.Hide();
-    }
-
-    public override void Close()
-    {
-        Debug.WriteLine("Destruction de la scene options");
-        base.Close();
     }
 }

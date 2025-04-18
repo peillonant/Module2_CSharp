@@ -7,6 +7,7 @@ public class Bomb : Power
     public Bomb(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Malus;
+        typeMalus = TypeMalus.Bomb;
         name = "Bomb";
     }
 
@@ -28,6 +29,7 @@ public class Bomb : Power
             characterTargeted.GetPowerAffected().SetAffectedByMalus(true);
 
             cellAvailables[indexCell].UpdateCell(TypeCell.Bomb);
+            cellAvailables[indexCell].SetCellLifeTimer(5);
             
         }
 

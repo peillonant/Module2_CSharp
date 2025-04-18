@@ -10,6 +10,7 @@ public enum TypePower
 
 public enum TypeBonus
 {
+    None,
     Shrink,
     UpTimer,
     Metal,
@@ -21,6 +22,7 @@ public enum TypeBonus
 
 public enum TypeMalus
 {
+    None,
     Stun,
     Obstacle,
     DownTimer,
@@ -34,6 +36,8 @@ public abstract class Power (PowerSystem powerSystemOrigin)
 {
     protected TypePower typePower;
     protected PowerSystem powerSystemOrigin = powerSystemOrigin;
+    protected TypeBonus typeBonus = TypeBonus.None;
+    protected TypeMalus typeMalus = TypeMalus.None;
     protected string name = "";
     protected float f_Timer = 0;
 
@@ -42,6 +46,9 @@ public abstract class Power (PowerSystem powerSystemOrigin)
     public TypePower GetTypePower() => typePower;
     public string GetNamePower() => name;
 
+    public TypeBonus GetPowerTypeBonus() => typeBonus;
+    public TypeMalus GetPowerTypeMalus() => typeMalus;
+    
     protected void NotificationBoardPower(Character characterTargeted, string namePower)
     {
         if (powerSystemOrigin.characterOrigin.IsPlayer())

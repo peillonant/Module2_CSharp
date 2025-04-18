@@ -8,6 +8,7 @@ public class Enemy : Character
     public Enemy() : base()
     {
         GenerateLevelEnemy();
+        GenerateColorEnemy();
 
         // Initation of the Algorithem linked to the movement
         movementAlgorithm = new(characterBoard, characterSnake, i_EnemyLevel);
@@ -37,6 +38,15 @@ public class Enemy : Character
         }
 
         i_EnemyLevel = Raylib.GetRandomValue(i_ValueMin, i_ValueMax);
+    }
+
+    private void GenerateColorEnemy()
+    {
+        int r = Raylib.GetRandomValue(1, 255);
+        int g = Raylib.GetRandomValue(1, 255);
+        int b = Raylib.GetRandomValue(1, 255);
+
+        characterColor = new (r, g, b);
     }
 
     public override void UpdatePlayer()

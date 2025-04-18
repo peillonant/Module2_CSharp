@@ -3,6 +3,7 @@ public class UpTimer : Power
     public UpTimer(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Bonus;
+        typeBonus = TypeBonus.UpTimer;
         name = "UpTimer";
     }
 

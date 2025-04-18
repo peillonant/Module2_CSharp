@@ -3,6 +3,7 @@ public class Extend : Power
     public Extend(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Malus;
+        typeMalus = TypeMalus.Extend;
         name = "Extend";
     }
 

@@ -8,11 +8,12 @@ public class SceneWin : Scene
     string s_TextButton = "Back";
     int i_PXText, i_PXButton;
     int i_PYText, i_PYButton;
-    Button backButton = new();
+    Button? backButton;
 
     private ButtonsList buttonsList = new ButtonsList();
 
-    public SceneWin()
+    // Methode qui s'execute lorsque la scene vient à l'écran
+    public override void Show()
     {
         Vector2 v2_TextSceneSize = Raylib.MeasureTextEx(Raylib.GetFontDefault(), s_TextScene, 50, 1);
 
@@ -21,37 +22,36 @@ public class SceneWin : Scene
 
         i_PXButton = (Raylib.GetScreenWidth() - 200) / 2;
         i_PYButton = (Raylib.GetScreenHeight() - 40) / 2 + 100;
-        
-        backButton.Rect = new Rectangle(i_PXButton, i_PYButton, 200, 40);
-        backButton.Text = s_TextButton;
-        backButton.Color = Color.White;
+
+        backButton = new()
+        {
+            Rect = new Rectangle(i_PXButton, i_PYButton, 200, 40),
+            Text = s_TextButton,
+            Color = Color.White
+        };
 
         buttonsList.AddButton(backButton);
-    }
-
-    // Methode qui s'execute lorsque la scene vient à l'écran
-    public override void Show()
-    {
-        base.Show();
     }
 
     // Méthode lorsque la scene est caché par une autre scene
     public override void Hide()
     {
-        base.Hide();
+        backButton = null;
+        buttonsList.ClearList();
     }
 
     // Game loop, Update variable
     public override void Update()
     {
+        if (backButton == null) return;
+
         buttonsList.Update();
 
         if (backButton.IsClicked || Raylib.IsKeyPressed(KeyboardKey.Space))
         {
-            GameState.ChangeScene("menu");
+            Services.Get<IScenesManager>().Show<SceneMenu>();
+            GameInfo.SetLaunchNewGame(true);
         }
-
-        base.Update();
     }
 
     // Game loop, Draw on the Screen
@@ -61,14 +61,5 @@ public class SceneWin : Scene
         Raylib.DrawText(s_TextScene, i_PXText, i_PYText, 50, Color.Black);
 
         buttonsList.Draw();
-
-        base.Draw();
-    }
-
-    // When we close the window (Unload the prog)
-    public override void Close()
-    {
-        Debug.WriteLine("Destruction de la scene win");
-        base.Close();
     }
 }

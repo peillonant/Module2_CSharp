@@ -5,6 +5,7 @@ public class DownTimer : Power
     public DownTimer(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Malus;
+        typeMalus = TypeMalus.DownTimer;
         name = "DownTimer";
     }
     

@@ -1,30 +1,10 @@
 public abstract class Scene
 {
-    public string name = "";
-    public bool b_FromMenu;
+    public abstract void Show();
 
-    public virtual void Show()
-    {
+    public abstract void Hide();
 
-    }
+    public abstract void Update();
 
-    public virtual void Hide()
-    {
-
-    }
-
-    public virtual void Update()
-    {
-
-    }
-
-    public virtual void Draw()
-    {
-
-    }
-
-    public virtual void Close()
-    {
-
-    }
+    public abstract void Draw();
 }

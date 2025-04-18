@@ -3,6 +3,7 @@ public class Freeze : Power
     public Freeze(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Bonus;
+        typeBonus = TypeBonus.Freeze;
         name = "Freeze";
     }
 

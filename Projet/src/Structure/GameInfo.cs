@@ -6,10 +6,12 @@ public static class GameInfo
     private static int i_difficultyGame = 1;
     private static float f_SpeedSnake = 0.5f;
     private static int i_cptApple = 0;
-    private static int i_NextLevelAppleNeeded = 2;
+    private static int i_NextLevelAppleNeeded = 10;
     private static int i_NbPlayer;
     private static int i_NbCharacterTotal;
     private static int i_NbCharacterAlive;
+    private static bool b_LaunchNewGame = true;
+
     #endregion
 
     #region ConstVariable
@@ -20,6 +22,8 @@ public static class GameInfo
     public static float[] ratioLins_16 = [0.03f, 0.28f, 0.53f, 0.77f];
     public static float[] ratioCols_8 = [0.10f, 0.79f];
     public static float[] ratioLins_8 = [0.03f, 0.28f, 0.53f, 0.77f];
+    public static float[] ratioCols_5 = [0.05f, 0.74f];
+    public static float[] ratioLins_5 = [0.09f, 0.54f];
     public static float[] ratioCols_3 = [0.03f, 0.70f];
     public static float[] ratioLins_3 = [0.25f];
     #endregion
@@ -36,6 +40,9 @@ public static class GameInfo
     public static int GetNbCharacterTotal() => i_NbCharacterTotal;
     public static int GetNbCharacterAlive() => i_NbCharacterAlive;
     public static int GetNbPlayer() => i_NbPlayer;
+    public static int GetNbAppleEaten() => i_cptApple;
+    public static int GetNbAppleNeeded() => i_NextLevelAppleNeeded;
+    public static bool GetLaunchNewGame() => b_LaunchNewGame;
     #endregion
 
     public static void DecreaseNbCharacterAlive()
@@ -45,7 +52,7 @@ public static class GameInfo
         if (i_NbCharacterAlive > 1)
             NbCharacterAliveDecreased?.Invoke();
         else
-            GameState.ChangeScene("win");
+            Services.Get<IScenesManager>().Show<SceneWin>();  
     }
 
     public static void IncreaseCptApple()
@@ -53,7 +60,7 @@ public static class GameInfo
         i_cptApple++;
         if (i_cptApple == i_NextLevelAppleNeeded)
         {
-            f_SpeedSnake *= 0.9f;
+            f_SpeedSnake *= 0.75f;
             i_NextLevelAppleNeeded *= 2;
 
             SpeedIncreased?.Invoke();
@@ -74,5 +81,18 @@ public static class GameInfo
             i_NbCharacterTotal = 170;       // 10 Tables
 
         i_NbCharacterAlive = i_NbCharacterTotal;
+    }
+
+    public static void ResetGameInfo()
+    {
+        i_difficultyGame = 1;
+        f_SpeedSnake = 0.5f;
+        i_cptApple = 0;
+        i_NextLevelAppleNeeded = 10;
+    }
+
+    public static void SetLaunchNewGame(bool newBool)
+    {
+        b_LaunchNewGame = newBool;
     }
 }

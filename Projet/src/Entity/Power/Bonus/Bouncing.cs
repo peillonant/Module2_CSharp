@@ -3,6 +3,7 @@ public class Bouncing : Power
     public Bouncing(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Bonus;
+        typeBonus = TypeBonus.Bouncing;
         name = "Bouncing";
     }
 

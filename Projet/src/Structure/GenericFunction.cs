@@ -4,7 +4,7 @@ using Raylib_cs;
 
 public static class GenericFunction
 {
-    public static void ChangePosition(ref Vector2 v2_Position, int i_Direction)
+    public static Vector2 ChangePosition(Vector2 v2_Position, int i_Direction)
     {
         switch (i_Direction)
         {
@@ -21,6 +21,8 @@ public static class GenericFunction
                 v2_Position.X -= 1;
                 break;
         }
+
+        return v2_Position;
     }
 
     // Method to alow the enemy snake to check if it can change direction or not
@@ -37,11 +39,4 @@ public static class GenericFunction
 
         return false;
     }
-
-    // Tweening section
-    public static float Tweening_OutSin(float f_Time, float f_Value, float f_Distance, float f_Duration)
-    {
-        return f_Distance * MathF.Sin(f_Time / f_Duration * (MathF.PI / 2)) + f_Value;
-    }
-
 }

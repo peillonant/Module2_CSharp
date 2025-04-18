@@ -11,6 +11,7 @@ public class Player : Character
         i_newDirection = characterSnake.GetDirection();
         b_IsDisplayed = true;
         b_isPlayer = true;
+        characterColor = new(69, 142, 245);
     }
 
     public override void UpdatePlayer()
@@ -38,16 +39,10 @@ public class Player : Character
 
 
         if (Raylib.IsKeyPressed(KeyboardKey.Escape))
-            GameState.ChangeScene("pause");
+            Services.Get<IScenesManager>().Show<ScenePause>();
     }
 
-    protected override void OnTimerDown()
-    {
-        GameManager.GameLostTimer();
-    }
+    protected override void OnTimerDown() => GameManager.GameLostTimer();
 
-    protected override void OnCollisionLost()
-    {
-        GameManager.GameLostCollision();
-    }
+    protected override void OnCollisionLost() => GameManager.GameLostCollision();
 }

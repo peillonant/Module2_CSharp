@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Numerics;
 
 public class Pathfinder
@@ -16,8 +13,8 @@ public class Pathfinder
     #endregion
 
     public List<PathfindingCell> GetCurrentPath() => currentPath;
-
     public List<PathfindingCell> GetCurrentFrontier() => currentFrontier;
+
 
     // Function to clear the currentFrontier list when we create the new graph for the snake
     private void ResetPathfinder()
@@ -33,7 +30,7 @@ public class Pathfinder
         ResetPathfinder();
 
         // Retrieve the cell where the snakeHead is
-        CellSnakeHead = new(mvtAlgo.GetSnake().GetHead(), TypeCell.OwnBodyHead);
+        CellSnakeHead = new(mvtAlgo.GetSnake().GetSnakeHead(), TypeCell.OwnBodyHead);
 
         openSet.Enqueue(CellSnakeHead);
         CellSnakeHead.SetCost(0);
@@ -57,7 +54,8 @@ public class Pathfinder
                 adjacentCell.SetCost(currentCell.GetCost() + 1);
 
                 // Check the level to see if we can go deeper or not
-                if (!IsValidCell(adjacentCell, mvtAlgo.GetLevel()))
+                // We add 3 to increase the visibility of all Snake managed by computer
+                if (!IsValidCell(adjacentCell, mvtAlgo.GetLevel() + 3))
                     continue;
 
                 adjacentCell.SetParentCell(currentCell);
@@ -77,21 +75,21 @@ public class Pathfinder
     {
         pathfindingCells.Clear();
         int i_CellToStart = 1;
-        int i_NbAdjacentToCheck = 5;
+        int i_NbAdjacentToCheck = 4;
 
         if (i_direction != 0)
         {
             i_CellToStart = (i_direction - 1 == 0) ? 4 : i_direction - 1;
-            i_NbAdjacentToCheck = 3 + i_CellToStart;
+            // We add 2 to cellToStart when we are looking on the neightboor cell of the current Head. This means we'll check the 3 cell around
+            i_NbAdjacentToCheck = 2 + i_CellToStart;
         }
 
-        // Rotate around the origine cell to check each cell around and find all correct adjacent cell
-        for (int i = i_CellToStart; i < i_NbAdjacentToCheck; i++)
+        // Rotate around the origin cell to check each cell around and find all correct adjacent cell
+        for (int i = i_CellToStart; i <= i_NbAdjacentToCheck; i++)
         {
             int tmpDirection = (i % 4 == 0) ? 4 : i % 4;
             Vector2 v2_PositionToCheck = origin.GetCellPosition();
-
-            GenericFunction.ChangePosition(ref v2_PositionToCheck, tmpDirection);
+            v2_PositionToCheck = GenericFunction.ChangePosition(v2_PositionToCheck, tmpDirection);
 
             PathfindingCell adjacentCell = new(v2_PositionToCheck, board.GetValueBoard(v2_PositionToCheck));
 
@@ -109,7 +107,7 @@ public class Pathfinder
         return pathfindingCells;
     }
 
-    // Check if the Position received is already savec on the currentFrontier
+    // Check if the Position received is already saved on the currentFrontier
     private bool CheckCell(Vector2 v2_PositionCell)
     {
         foreach (PathfindingCell pathfindingCell in currentFrontier)
@@ -139,12 +137,9 @@ public class Pathfinder
     // Method to retrieve the Cell that contain the Apple and return it
     public int GetIndexCell(TypeCell typeCellTarget)
     {
-        PathfindingCell pathfindingCell;
-
         for (int i = 0; i < currentFrontier.Count; i++)
         {
-            pathfindingCell = currentFrontier[i];
-            if (pathfindingCell.GetTypeCell() == typeCellTarget)
+            if (currentFrontier[i].GetTypeCell() == typeCellTarget)
                 return i;
         }
         return -1;
@@ -153,6 +148,9 @@ public class Pathfinder
     // Creates a path between the Cell origin (Head of Snake) and the Cell targeted
     public void CreatePathToTarget(int i_IndexCell)
     {
+        if (i_IndexCell > currentFrontier.Count)
+            return;
+
         PathfindingCell? targetCell = currentFrontier[i_IndexCell];
         PathfindingCell origin = currentFrontier[0];
 

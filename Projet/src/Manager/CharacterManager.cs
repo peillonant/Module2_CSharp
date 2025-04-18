@@ -27,10 +27,7 @@ public class CharacterManager
 
     public void UpdateCharacters()
     {
-        if (tabCharacter == null)
-            return; 
-        
-        for (int i = 0; i < tabCharacter.Length; i++)
+        for (int i = 0; i < tabCharacter?.Length; i++)
         {
             tabCharacter[i].UpdatePlayer();
         }
@@ -39,14 +36,17 @@ public class CharacterManager
     }
 
     public void DrawCharacters()
-    {   
-        if (tabCharacter == null)
-            return; 
-
-        for (int i = 0; i < tabCharacter.Length; i++)
+    {
+        for (int i = 0; i < tabCharacter?.Length; i++)
         {
             if (tabCharacter[i].IsDisplayed())
-                UI_Board.DrawBoard(tabCharacter[i]);
+                UIManager.DrawBoard(tabCharacter[i]);
         }
+    }
+
+    public void ResetCharacter()
+    {
+        if (tabCharacter != null)
+            Array.Clear(tabCharacter);
     }
 }

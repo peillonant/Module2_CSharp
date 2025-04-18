@@ -81,7 +81,7 @@ public class MovementAlgorithm
     // Method to see if the snake Enemy has to change the direction
     private bool CheckToChangeDirection()
     {
-        if (!b_IsTargettingBonus)
+        if (b_IsTargettingBonus)
             return Raylib.GetRandomValue(1, snakeBrain.i_ValueMax) > snakeBrain.i_ThresholdChangeDirectionBonusTargeted;
 
         else
@@ -159,14 +159,14 @@ public class MovementAlgorithm
             return 1;
     }
 
-    // Method that update the bool to know if the snake is targetting a Bonus or an Apple
+    // Method that update the bool to know if the snake is targetting a Bonus, an Apple or a Malus
     private void TargetIsBonusOrApple()
     {
         if (pathfinder.GetCurrentPath().Count > 0)
         {
             Cell cellTargeted = pathfinder.GetCurrentPath().Last();
 
-            b_IsTargettingBonus = (cellTargeted.GetTypeCell() == TypeCell.Apple) || (cellTargeted.GetTypeCell() == TypeCell.Bonus);
+            b_IsTargettingBonus = (cellTargeted.GetTypeCell() == TypeCell.Apple) || (cellTargeted.GetTypeCell() == TypeCell.Bonus) || (cellTargeted.GetTypeCell() == TypeCell.Malus);
         }
     }
 }

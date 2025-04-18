@@ -11,7 +11,7 @@
     <PackageReference Include="Raylib-cs" Version="7.0.1" />
 
     <!-- Copie tous les fichiers du répertoire ressources et ses sous répertoires -->
-    <None Update="Asset\**\*">
+    <None Update="Assets\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

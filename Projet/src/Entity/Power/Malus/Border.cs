@@ -5,6 +5,7 @@ public class Border : Power
     public Border(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Malus;
+        typeMalus = TypeMalus.Border;
         name = "Border";
     }
 
@@ -19,10 +20,12 @@ public class Border : Power
         else
         {
             List<Cell> cellAvailables = characterTargeted.GetBoard().GetCellAvailable();
-        
-            int indexCell = Raylib.GetRandomValue(0, cellAvailables.Count - 1);
             
-            cellAvailables[indexCell].UpdateCell(TypeCell.Border);
+            for (int i = 0; i < 3; i++)
+            {
+                int indexCell = Raylib.GetRandomValue(0, cellAvailables.Count - 1);
+                cellAvailables[indexCell].UpdateCell(TypeCell.Border);
+            }
         }
 
         NotificationBoardPower(characterTargeted, name);

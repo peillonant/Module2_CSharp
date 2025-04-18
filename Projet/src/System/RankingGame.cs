@@ -1,5 +1,20 @@
-using System.Diagnostics;
 using Raylib_cs;
+
+public class CompareTimer : IComparer<Character>
+{
+    public int Compare(Character? charA, Character? charB)
+    {
+        if (charA != null && charB != null)
+        {
+            int charATimer = charA.GetTimer().GetTimerLife();
+            int charBTimer = charB.GetTimer().GetTimerLife();
+            return charBTimer.CompareTo(charATimer);
+        }
+        else
+            return (charA != null) ? -1 : 1;
+    }
+}
+
 
 public static class RankingGame
 {
@@ -18,6 +33,15 @@ public static class RankingGame
 
         GameInfo.NbCharacterAliveDecreased += UpdateRanking;
     }
+
+    public static void ResetRanking()
+    {
+        if (tabCharacter != null)
+            Array.Clear(tabCharacter);
+        
+        GameInfo.NbCharacterAliveDecreased -= UpdateRanking;
+    }
+
 
     public static void UpdateRanking()
     {
@@ -41,17 +65,3 @@ public static class RankingGame
 }
 
 
-public class CompareTimer : IComparer<Character>
-{
-    public int Compare(Character? charA, Character? charB)
-    {
-        if (charA != null && charB != null)
-        {
-            int charATimer = charA.GetTimer().GetTimerLife();
-            int charBTimer = charB.GetTimer().GetTimerLife();
-            return charBTimer.CompareTo(charATimer);
-        }
-        else
-            return (charA != null) ? -1 : 1;
-    }
-}

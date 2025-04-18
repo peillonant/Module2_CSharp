@@ -20,6 +20,8 @@ public class Cell
     protected TypeCell typeCell;
     protected bool b_IsOccupied;
     protected Vector2 v2_CellPosition;
+    protected float f_Timer = 0;
+    protected float f_LifeTimer = 0;
 
     public TypeCell GetTypeCell() => typeCell;
     public bool IsOccupied() => b_IsOccupied;
@@ -36,6 +38,8 @@ public class Cell
     public void UpdateCell(TypeCell newTypeCell)
     {
         typeCell = newTypeCell;
+        f_Timer = 0;
+        f_LifeTimer = 0;
         UpdateIsOccupied();
     }
 
@@ -69,4 +73,10 @@ public class Cell
                 break;
         }
     }
+
+    public void UpdateCellTimer(float dt) => f_Timer += dt;
+    public void SetCellTimer(float f_newTimer) => f_Timer = f_newTimer;
+    public void SetCellLifeTimer(float f_newLifeTimer) => f_LifeTimer = f_newLifeTimer;
+    public float GetCellTimer() => f_Timer;
+    public float GetCellLifeTimer () => f_LifeTimer;
 }

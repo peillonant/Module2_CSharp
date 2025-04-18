@@ -3,6 +3,7 @@ public class Metal : Power
     public Metal(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Bonus;
+        typeBonus = TypeBonus.Metal;
         name = "Metal";
     }
 

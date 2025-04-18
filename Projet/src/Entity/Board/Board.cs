@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
 using Raylib_cs;
 
@@ -17,34 +18,32 @@ public class Board
     #endregion
 
     #region Variable
-    private readonly Cell[,] boards = new Cell[GameInfo.i_nbCol, GameInfo.i_nbLin]; // Update this to be an Array of cell
+    private readonly Cell[,] boards = new Cell[GameInfo.i_nbCol, GameInfo.i_nbLin];
     #endregion
 
     public Board()
     {
-        for (int i = 0; i < GameInfo.i_nbCol; i++)
+        for (int col = 0; col < GameInfo.i_nbCol; col++)
         {
-            for (int j = 0; j < GameInfo.i_nbLin; j++)
+            for (int lin = 0; lin < GameInfo.i_nbLin; lin++)
             {
-                boards[i, j] = new(TypeCell.None, new Vector2(j, i));
+                boards[col, lin] = new(TypeCell.None, new Vector2(col, lin));
             }
         }
-
-        GenerateNewApple();
     }
 
-    public void AddObject(Vector2 v2_PositionObjectToAdd, TypeCell newTypeCell) => boards[(int)v2_PositionObjectToAdd.Y, (int)v2_PositionObjectToAdd.X].UpdateCell(newTypeCell);
+    public void AddObject(Vector2 v2_PositionObjectToAdd, TypeCell newTypeCell) => boards[(int)v2_PositionObjectToAdd.X, (int)v2_PositionObjectToAdd.Y].UpdateCell(newTypeCell);
 
-    public void RemoveObject(Vector2 v2_PositionObjectToRemove) => boards[(int)v2_PositionObjectToRemove.Y, (int)v2_PositionObjectToRemove.X].UpdateCell(TypeCell.None);
+    public void RemoveObject(Vector2 v2_PositionObjectToRemove) => boards[(int)v2_PositionObjectToRemove.X, (int)v2_PositionObjectToRemove.Y].UpdateCell(TypeCell.None);
 
     // Retrieve the Cell by a Position
-    public Cell GetCellFromBoar(Vector2 v2_PositionCell) => boards[(int) v2_PositionCell.X, (int) v2_PositionCell.Y];
+    public Cell GetCellFromBoard(Vector2 v2_PositionCell) => boards[(int) v2_PositionCell.X, (int) v2_PositionCell.Y];
 
-    // Retrive the TypeCell from the Position
+    // Retrieve the TypeCell from the Position
     public TypeCell GetValueBoard(Vector2 v2_PositionToReturn)
     {
-        int i_IndexLin = (int)v2_PositionToReturn.X;
-        int i_IndexCol = (int)v2_PositionToReturn.Y;
+        int i_IndexCol = (int)v2_PositionToReturn.X;
+        int i_IndexLin = (int)v2_PositionToReturn.Y;
 
         if (i_IndexCol < 0 || i_IndexCol >= GameInfo.i_nbCol || i_IndexLin < 0 || i_IndexLin >= GameInfo.i_nbLin)
             return TypeCell.Border;
@@ -65,9 +64,10 @@ public class Board
             i_IndexCol = Raylib.GetRandomValue(0, GameInfo.i_nbCol - 1);
             i_IndexLin = Raylib.GetRandomValue(0, GameInfo.i_nbLin - 1);
 
-            v2_PositionApple = new(i_IndexLin, i_IndexCol);
+            v2_PositionApple = new(i_IndexCol, i_IndexLin);
 
             b_PositionValidated = CheckCollision(v2_PositionApple, false);
+
         } while (!b_PositionValidated);
 
         AddObject(v2_PositionApple, TypeCell.Apple);
@@ -76,8 +76,8 @@ public class Board
     // Method that update the Snake position on the board
     public void UpdateSnakePosition(Vector2 v2_SnakePosition, int i_SizeSnake)
     {
-        int i_IndexLin = (int)v2_SnakePosition.X;
-        int i_IndexCol = (int)v2_SnakePosition.Y;
+        int i_IndexCol = (int)v2_SnakePosition.X;
+        int i_IndexLin = (int)v2_SnakePosition.Y;
 
         if (i_IndexCol < 0 || i_IndexLin < 0 || i_IndexCol > GameInfo.i_nbCol || i_IndexLin > GameInfo.i_nbLin)
             Debug.WriteLine("bug ici");
@@ -118,8 +118,8 @@ public class Board
     // Called by the Snake to check the collision but also by function that add a new object on the board (Apple, Bonus, Collider)
     public bool CheckCollision(Vector2 v2_SnakePosition, bool b_isSnake)
     {
-        int i_IndexLin = (int)v2_SnakePosition.X;
-        int i_IndexCol = (int)v2_SnakePosition.Y;
+        int i_IndexCol = (int)v2_SnakePosition.X;
+        int i_IndexLin = (int)v2_SnakePosition.Y;
 
         // First check if the head of the snake is hitting outside of the board
         if (i_IndexCol < 0 || i_IndexCol >= GameInfo.i_nbCol || i_IndexLin < 0 || i_IndexLin >= GameInfo.i_nbLin)
@@ -185,6 +185,13 @@ public class Board
                     return false;
             }
 
+            if (cell.GetTypeCell() == TypeCell.Border)
+            {
+                if (b_isSnake) CollisionBorder?.Invoke();
+
+                return false;
+            }
+
             return true;
         }
     }
@@ -194,34 +201,34 @@ public class Board
     {
         List<Cell> cellAvailables = [];
 
-        for (int i = 0; i < GameInfo.i_nbLin; i++)
+        for (int col = 0; col < GameInfo.i_nbCol; col++)
         {
-            for (int j = 0; j < GameInfo.i_nbCol; j++)
+            for (int lin = 0; lin < GameInfo.i_nbLin; lin++)
             {
-                if (boards[j, i].GetTypeCell() == TypeCell.None)
-                    cellAvailables.Add(boards[j, i]);
+                if (boards[col, lin].GetTypeCell() == TypeCell.None)
+                    cellAvailables.Add(boards[col, lin]);
             }
         }
 
         return cellAvailables;
     }
 
-    // Function that has been trigger by the Power Bomb and check all cell around to see if a Snake part is here
+    // Function that has been trigger by the Power Bomb and check all cell around to see if a Snake part is here    (Moor Neighboor)
     public void TriggerBombCell(Cell cellBomb)
     {
-        for (int lin = -1; lin <= 1; lin++)
+        for (int col = -1; col <= 1; col++)
         {
-            for (int col = -1; col <= 1; col++)
+            for (int lin = -1; lin <= 1; lin++)
             {
                 if (lin == 0 && col == 0) continue; // Ignore the cellBomb
 
-                int newLin = (int) cellBomb.GetCellPosition().X + lin;
-                int newCol = (int) cellBomb.GetCellPosition().Y + col;
+                int newCol = (int) cellBomb.GetCellPosition().X + col;
+                int newLin = (int) cellBomb.GetCellPosition().Y + lin;
 
                 // Vérifie que la cellule est bien dans la grille
                 if (newLin >= 0 && newLin < GameInfo.i_nbLin && newCol >= 0 && newCol < GameInfo.i_nbCol)
                 {
-                    Cell cellToTest = boards[newLin, newCol];
+                    Cell cellToTest = boards[newCol, newLin];
 
                     if ((int) cellToTest.GetTypeCell() > 0 && (int) cellToTest.GetTypeCell() < 4)
                         CollisionSnake?.Invoke();

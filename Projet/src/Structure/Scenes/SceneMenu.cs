@@ -6,10 +6,10 @@ public class SceneMenu : Scene
     private int i_ButtonWidht = 200;
     private int i_ButtonHeight = 40;
 
-    private Button playButton, optionsButton, quitButton;
+    private Button? playButton, optionsButton, quitButton;
     private ButtonsList buttonsList_Menu = new ButtonsList();
 
-    public SceneMenu()
+    public override void Show()
     {
         // Managing the Main Menu
         playButton = new Button { Rect = new Rectangle((Raylib.GetScreenWidth() - i_ButtonWidht) /2 , ((Raylib.GetScreenHeight() - i_ButtonHeight) /2 ) - i_ButtonHeight - 5, i_ButtonWidht, i_ButtonHeight), Text = "Local Game", Color = Color.White };
@@ -20,23 +20,30 @@ public class SceneMenu : Scene
         buttonsList_Menu.AddButton(optionsButton);
         buttonsList_Menu.AddButton(quitButton);
     }
+
+    public override void Hide()
+    {
+        playButton = null;
+        optionsButton = null;
+        quitButton = null;
+        buttonsList_Menu.ClearList();
+    }
+
     public override void Update()
     {
+        if (playButton == null || optionsButton == null || quitButton == null)
+            return;
+
         buttonsList_Menu.Update();
+
         if (playButton.IsClicked || Raylib.IsKeyPressed(KeyboardKey.Space))
-        {
-            GameState.ChangeScene("difficulty");
-        }
+            Services.Get<IScenesManager>().Show<SceneDifficulty>(); 
+
         else if (optionsButton.IsClicked || Raylib.IsKeyPressed(KeyboardKey.O))
-        {
-            GameState.ChangeScene("options");
-            GameState.RetrieveScene("options").b_FromMenu = true;
-        }
+            Services.Get<IScenesManager>().Show<SceneOptions>(); 
+
         else if (quitButton.IsClicked)
-        {
-            Raylib.CloseWindow();
-        }
-        base.Update();
+            Game.b_CloseWindow = true;
     }
 
      public override void Draw()
@@ -49,7 +56,6 @@ public class SceneMenu : Scene
         Raylib.DrawText(s_textTitle, i_px, i_py, 20, Color.Black);
 
         buttonsList_Menu.Draw();
-        base.Draw();
     }
 
 }

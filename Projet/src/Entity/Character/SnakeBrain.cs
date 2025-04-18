@@ -16,9 +16,9 @@ public struct SnakeBrain
     public int i_ValueMax = 10;
     public int i_ThresholdApple = 3;
     public int i_ThresholdBonus = 2;
-    public int i_ThresholdBorder = 1;
-    public int i_ThresholdObstacle = 2;
-    public int i_ThresholdOwnBody = 4;
+    public int i_ThresholdBorder = 4;
+    public int i_ThresholdObstacle = 5;
+    public int i_ThresholdOwnBody = 6;
     public int i_ThresholdChangeDirection = 2;
     public int i_ThresholdChangeDirectionBonusTargeted = 5;
     #endregion
@@ -34,7 +34,7 @@ public struct SnakeBrain
     // Rule: threshold are multiply by 2.5 and the Value Max by 2.25
     private void ComputeValuePriorisation(int i_EnemyLevel)
     {
-        for (int i = 1; i < i_EnemyLevel; i++)
+        for (int i = 1; i <= i_EnemyLevel; i++)
         {
             i_ValueMax = (int)(i_ValueMax * f_ValueFactor);
             i_ThresholdApple = (int)(i_ThresholdApple * f_ThresholdFactor);
@@ -44,7 +44,7 @@ public struct SnakeBrain
 
     private void ComputeValueObstacle(int i_EnemyLevel)
     {
-        for (int i = 1; i < i_EnemyLevel; i++)
+        for (int i = 1; i <= i_EnemyLevel; i++)
         {
             i_ThresholdObstacle = (int)(i_ThresholdObstacle * f_ThresholdFactor);
             i_ThresholdBorder = (int)(i_ThresholdBorder * f_ThresholdFactor);
@@ -54,7 +54,7 @@ public struct SnakeBrain
 
     private void ComputeValueChangeDirection(int i_EnemyLevel)
     {
-        for (int i = 1; i < i_EnemyLevel; i++)
+        for (int i = 1; i <= i_EnemyLevel; i++)
         {
             i_ThresholdChangeDirection = Math.Min((int)(i_ThresholdChangeDirection * f_ThresholdFactor), i_ValueMax);
             i_ThresholdChangeDirectionBonusTargeted = Math.Min((int)(i_ThresholdChangeDirectionBonusTargeted * f_ThresholdFactor), i_ValueMax);

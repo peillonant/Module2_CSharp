@@ -9,15 +9,18 @@ public class PowerSystem
     private Cell? cellBonus;
     private Cell? cellMalus;
 
-    private readonly Power?[] bonusAvailable = new Power[(int) TypeBonus.Count];
-    private readonly Power?[] malusAvailable = new Power[(int) TypeMalus.Count];
-    private int[] bonusSequence = new int[(int) TypeBonus.Count];
-    private int[] malusSequence = new int[(int) TypeMalus.Count];
+    private readonly Power?[] bonusAvailable = new Power[(int) TypeBonus.Count - 1];
+    private readonly Power?[] malusAvailable = new Power[(int) TypeMalus.Count - 1];
+    private int[] bonusSequence = new int[(int) TypeBonus.Count - 1];
+    private int[] malusSequence = new int[(int) TypeMalus.Count - 1];
     private int i_IndexBonusSequence = 0;
     private int i_IndexMalusSequence = 0;
     
     private Power? bonusDisplayed;
     private Power? malusDisplayed;
+
+    public Power? GetBonusDisplayed() => bonusDisplayed;
+    public Power? GetMalusDisplayed() => malusDisplayed;
 
 
     private float f_Timer = 0;
@@ -53,7 +56,7 @@ public class PowerSystem
         malusAvailable[2] = new DownTimer(this);    
         malusAvailable[3] = new Extend(this);
         malusAvailable[4] = new Bomb(this);
-        malusAvailable[5] = new Border(this);       
+        malusAvailable[5] = new Border(this); 
 
         InitMalusSequence();
         GenerateRandomSequence(TypePower.Malus);
@@ -86,7 +89,7 @@ public class PowerSystem
             {
                 do
                 {
-                    i_IndexRandom = Raylib.GetRandomValue(0, bonusAvailable.Length - 1);
+                    i_IndexRandom = Raylib.GetRandomValue(0, bonusAvailable.Length - 1);                    
                 } while(CheckValueAlreadyInSequence(i_IndexRandom, bonusSequence, i));
 
                 bonusSequence[i] = i_IndexRandom;
@@ -144,11 +147,6 @@ public class PowerSystem
         {
             bonusDisplayed = null;
             malusDisplayed = null;
-        }
-
-        if (characterOrigin.IsPlayer())
-        {
-            UI_Board.DrawPowerDisplayed(bonusDisplayed, malusDisplayed);
         }
     }
 

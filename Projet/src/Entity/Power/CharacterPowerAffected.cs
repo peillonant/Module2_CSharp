@@ -18,7 +18,6 @@ public class CharacterPowerAffected (Character characterOrigin)
     private bool b_IsStuned;
     private bool b_HasBomb;
     private List<Cell> listCellBomb = [];
-    private List<float> listTimerBomb = [];
     private float f_TimerMalus = 0;
     private float f_TimerMalusSpend = 0;
 
@@ -111,9 +110,9 @@ public class CharacterPowerAffected (Character characterOrigin)
         int i_Direction = character.GetSnake().GetDirection();
 
         // Compute the cell for the next frame
-        Vector2 v2_posCollision = character.GetSnake().GetHead();
+        Vector2 v2_posCollision = character.GetSnake().GetSnakeHead();
 
-        GenericFunction.ChangePosition(ref v2_posCollision, i_Direction);
+        v2_posCollision = GenericFunction.ChangePosition(v2_posCollision, i_Direction);
 
         // Remove the TypeCell Collision on it
         character.GetBoard().RemoveObject(v2_posCollision);
@@ -123,7 +122,6 @@ public class CharacterPowerAffected (Character characterOrigin)
     public void AddBomb(Cell cellBomb)
     {
         listCellBomb.Add(cellBomb);
-        listTimerBomb.Add(7.5f);
         b_HasBomb = true;
         b_AffectedByMalus = true;
     }
@@ -133,12 +131,10 @@ public class CharacterPowerAffected (Character characterOrigin)
     {
         for (int i = 0; i < listCellBomb.Count; i++)
         {
-            listTimerBomb[i] -= Raylib.GetFrameTime();
+            listCellBomb[i].UpdateCellTimer(Raylib.GetFrameTime());
 
-            if (listTimerBomb[i] < 0)
-            {
-                listTimerBomb.Remove(listTimerBomb[i]);
-                
+            if (listCellBomb[i].GetCellTimer() > 5)
+            {               
                 characterOrigin.GetBoard().TriggerBombCell(listCellBomb[i]);
                 characterOrigin.GetBoard().RemoveObject(listCellBomb[i].GetCellPosition());
 

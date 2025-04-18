@@ -9,9 +9,11 @@ public abstract class Character
     protected Timer characterTimer = new();
     protected PowerSystem powerSystem;
     protected CharacterPowerAffected characterPowerAffected;
+    protected ViewBoard viewBoard;
     #endregion
 
     #region Variable
+    // need to create a struct that contain all this information
     protected Vector2 v2_Position;
     protected bool b_isPlayer;
     protected int i_Ranking;
@@ -19,9 +21,10 @@ public abstract class Character
     protected float f_Zoom = 1;
     protected int i_IndexTable = -1;
     protected int i_PositionOnTable;
-    protected bool b_CanBeDisplay = true;
     protected bool b_IsDisplayed = false;
     protected int i_newDirection;
+    protected bool b_AnimationPerformed = false;
+    protected Color characterColor;
     #endregion 
 
     public Character()
@@ -32,11 +35,13 @@ public abstract class Character
         characterBoard.AddObject(new(9, 9), TypeCell.OwnBodyHead);
 
         // 1 = Top, 2 = Right, 3 = Bottom, 4 = Left
-        characterSnake = new(Raylib.GetRandomValue(1, 4), characterBoard);
+        characterSnake = new(Raylib.GetRandomValue(1, 4), characterBoard, () => characterBoard.GenerateNewApple());
         
         powerSystem = new(this);
 
         characterPowerAffected = new(this);
+
+        viewBoard = new ViewBoard(characterBoard, characterSnake);
 
         SubscriptionEvent();
     }
@@ -45,7 +50,9 @@ public abstract class Character
     public Board GetBoard() => characterBoard;
     public Snake GetSnake() => characterSnake;
     public Timer GetTimer() => characterTimer;
+    public PowerSystem GetPowerSystem() => powerSystem;
     public CharacterPowerAffected GetPowerAffected() => characterPowerAffected;
+    public ViewBoard GetViewBoard() => viewBoard;
     public bool IsPlayer() => b_isPlayer;
     public bool IsAlive() => b_StillAlive;
     public int GetRanking() => i_Ranking;
@@ -53,15 +60,14 @@ public abstract class Character
     public float GetZoom() => f_Zoom;
     public int GetTable() => i_IndexTable;
     public int GetPositionOnTable() => i_PositionOnTable;
-    public bool CanBeDisplay() => b_CanBeDisplay;
     public bool IsDisplayed() => b_IsDisplayed;
+    public Color GetCharacterColor() => characterColor;
     #endregion
 
     #region Setter
     public void SetRanking(int i_newRanking) => i_Ranking = i_newRanking;
     public void SetTable(int i_newIndexTable) => i_IndexTable = i_newIndexTable;
     public void SetPositionOnTable(int i_newPosition) => i_PositionOnTable = i_newPosition;
-    public void SetCanBeDisplay(bool b_newDisplay) => b_CanBeDisplay = b_newDisplay;
     public void SetIsDisplayed(bool b_newIsDisplayed) => b_IsDisplayed = b_newIsDisplayed;
     public void SetNewDirection(int newDirection) => i_newDirection = newDirection;
     #endregion
@@ -131,20 +137,28 @@ public abstract class Character
 
     public virtual void UpdatePlayer()
     {
-        if (characterPowerAffected.IsAffectedByBonus() || characterPowerAffected.IsAffectedByMalus())
-            characterPowerAffected.UpdatePowerTimer();
+        if (b_AnimationPerformed)
+        {
+            if (characterPowerAffected.IsAffectedByBonus() || characterPowerAffected.IsAffectedByMalus())
+                characterPowerAffected.UpdatePowerTimer();
         
-        if (!characterPowerAffected.IsFreezed() && !characterPowerAffected.IsStuned())
-            characterSnake.UpdateSnakeMovement();
-        
-        if (!characterPowerAffected.IsFreezed())
-            characterTimer.UpdateTimer();
+            if (!characterPowerAffected.IsFreezed() && !characterPowerAffected.IsStuned())
+                characterSnake.UpdateSnakeMovement();
+            
+            if (!characterPowerAffected.IsFreezed())
+                characterTimer.UpdateTimer();
 
-        if (!characterPowerAffected.IsStuned())
-            powerSystem.UpdatePowerManager();
+            if (!characterPowerAffected.IsStuned())
+                powerSystem.UpdatePowerManager();
+
+            b_AnimationPerformed = false;
+        }
 
         if (b_IsDisplayed)
+        {
             UpdatePositionBoard();
+            viewBoard.UpdateViewBoard(() => b_AnimationPerformed = true);
+        }
     }
 
     private void UpdatePositionBoard()
@@ -168,6 +182,15 @@ public abstract class Character
 
                 f_ratioCol = GameInfo.ratioCols_3[tmpIndexCol];
                 f_ratioLin = GameInfo.ratioLins_3[tmpIndexLin];
+            }
+            else if (GameInfo.GetNbCharacterAlive() <= 5) // display 4 Enemies (2 each side)
+            {
+                tmpIndexCol = i_PositionOnTable % 2;
+                tmpIndexLin = i_PositionOnTable / 2;
+                f_Zoom = 1.5f;
+
+                f_ratioCol = GameInfo.ratioCols_5[tmpIndexCol];
+                f_ratioLin = GameInfo.ratioLins_5[tmpIndexLin];
             }
             else if (GameInfo.GetNbCharacterAlive() <= 9) // Display 8 Enemies (4 each side)
             {

@@ -5,6 +5,7 @@ public class Stun : Power
     public Stun(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Malus;
+        typeMalus = TypeMalus.Stun;
         name = "Stun";
     }
 
@@ -24,6 +25,7 @@ public class Stun : Power
                 b_CharacterAlreadyAffected = false;
             
             cpt++;
+
         }while(b_CharacterAlreadyAffected || cpt < 17);
         
         if (characterTargeted.GetPowerAffected().IsShield())

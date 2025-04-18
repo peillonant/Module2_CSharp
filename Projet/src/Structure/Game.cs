@@ -3,13 +3,10 @@ using Raylib_cs;
 
 public static class Game
 {
-    static SceneMenu sceneMenu = new();
-    static SceneGameplay sceneGameplay = new();
-    static SceneOptions sceneOptions = new();
-    static SceneDifficulty sceneDifficulty = new();
-    static SceneWin sceneWin = new();
-    static SceneGameOver sceneGameOver = new();
-    static ScenePause scenePause = new();
+    private static readonly ScenesManager _scenesManager = new();
+    private static readonly AssetsManager _assetsManager = new();
+
+    public static bool b_CloseWindow = false;
 
     public static void Main()
     {
@@ -18,37 +15,26 @@ public static class Game
         Raylib.SetTargetFPS(60);
         Raylib.SetExitKey(KeyboardKey.Null); 
 
-        GameState.RegisterScene("menu", sceneMenu);
-        GameState.RegisterScene("gameplay", sceneGameplay);
-        GameState.RegisterScene("difficulty", sceneDifficulty);
-        GameState.RegisterScene("options", sceneOptions);
-        GameState.RegisterScene("win", sceneWin);
-        GameState.RegisterScene("gameover", sceneGameOver);
-        GameState.RegisterScene("pause", scenePause);
+        LoadAsset.Load(_assetsManager);
+        _scenesManager.Show<SceneMenu>();
 
-        GameState.ChangeScene("menu");
+        // Init Sprite and color linked to the UI
+        UI_Board_Sprite.InitUI_Board_Sprite();
+        UINotification_Color.InitUI_Notification_Color();
 
         Debug.WriteLine("Lancement du programme");
 
-        while (!Raylib.WindowShouldClose())
+        while (!Raylib.WindowShouldClose() && !b_CloseWindow)
         {
-            GameState.UpdateScene();
+            _scenesManager.UpdateScene();
 
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.RayWhite);
             
-            GameState.DrawScene();
+            _scenesManager.DrawScene();
 
             Raylib.EndDrawing();
         }
-
-        GameState.RemoveScene("menu");
-        GameState.RemoveScene("gameplay");
-        GameState.RemoveScene("options");
-        GameState.RemoveScene("win");
-        GameState.RemoveScene("gameover");
-        GameState.RemoveScene("difficulty");
-        GameState.Close();
 
         Raylib.CloseWindow();
     }

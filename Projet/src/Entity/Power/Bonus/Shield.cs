@@ -3,6 +3,7 @@ public class Shield : Power
     public Shield(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
     {
         typePower = TypePower.Bonus;
+        typeBonus = TypeBonus.Shield;
         name = "Shield";
     }
 
