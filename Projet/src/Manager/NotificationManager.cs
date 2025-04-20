@@ -3,10 +3,11 @@ using Raylib_cs;
 
 public static class NotificationManager
 {
-    static readonly NotificationText notificationSpeed = new("Increase Speed", Raylib.GetScreenWidth() / 2, Raylib.GetScreenHeight() / 10, 2f);
-    
+    static readonly NotificationText notificationSpeed = new("Increase Speed", Raylib.GetScreenWidth() / 2, Raylib.GetScreenHeight() / 10, 2f, TypeNotificationText.InfoBoard);
+
     static List<NotificationBoard> listNotificationBoard = [];
     static List<NotificationText> listNotificationText = [];
+    static List<NotificationArrow> listNotificationArrow = [];
 
     static float f_CurrentProgressApple = 0;
     static float f_TargetProgessApple = 0;
@@ -14,7 +15,7 @@ public static class NotificationManager
     public static void UpdateNotification()
     {
         notificationSpeed.UpdateNotif();
-        
+
         for (int i = 0; i < listNotificationBoard.Count; i++)
         {
             listNotificationBoard[i].UpdateNotif();
@@ -37,7 +38,18 @@ public static class NotificationManager
             }
         }
 
-        ComputeAppleProgress();       
+        for (int i = 0; i < listNotificationArrow.Count; i++)
+        {
+            listNotificationArrow[i].UpdateNotif();
+
+            if (!listNotificationArrow[i].IsTriggered())
+            {
+                listNotificationArrow.Remove(listNotificationArrow[i]);
+                i--;
+            }
+        }
+
+        ComputeAppleProgress();
     }
 
     public static void DrawNotification()
@@ -46,28 +58,34 @@ public static class NotificationManager
             UINotification.DrawNotifText(notificationSpeed);
 
         for (int i = 0; i < listNotificationBoard.Count; i++)
-        {
             UINotification.DrawNotifBoard(listNotificationBoard[i]);
-        }
 
         for (int i = 0; i < listNotificationText.Count; i++)
-        {
             UINotification.DrawNotifText(listNotificationText[i]);
-        }
 
-        UIManager.DrawProgressApple(f_CurrentProgressApple);
+        for (int i = 0; i < listNotificationArrow.Count; i++)
+            UINotification.DrawNotifArrow(listNotificationArrow[i]);
+
+        UIInfoGame.DrawProgressApple(f_CurrentProgressApple);
     }
 
     public static void AddNotificationBoard(Character characterTargeted, TypeNotificationBoard typeNotificationBoard)
     {
-        NotificationBoard newNotificationBoard = new(typeNotificationBoard, (int) characterTargeted.GetPosition().X, (int) characterTargeted.GetPosition().Y, 5f, characterTargeted.GetZoom());
+        NotificationBoard newNotificationBoard = new(typeNotificationBoard, characterTargeted.GetPosition(), 5f, characterTargeted.GetZoom());
         listNotificationBoard.Add(newNotificationBoard);
     }
 
-    public static void AddNotificationText(string name)
+    public static void AddNotificationText(string name, TypeNotificationText typeNotificationText)
     {
-        NotificationText newNotificationText = new(name, Raylib.GetScreenWidth() / 2, Raylib.GetScreenHeight() / 10, 2f);
+        NotificationText newNotificationText = new(name, Raylib.GetScreenWidth() / 2, Raylib.GetScreenHeight() / 10, 2f, typeNotificationText);
         listNotificationText.Add(newNotificationText);
+        Debug.WriteLine("plop");
+    }
+
+    public static void AddNotificationArrow(Character characterOrigine, Character characterTargeted, TypeNotificationArrow typeNotificationArrow)
+    {
+        NotificationArrow newNotificationArrow = new(characterOrigine, characterTargeted, 3f, typeNotificationArrow);
+        listNotificationArrow.Add(newNotificationArrow);
     }
 
     public static void SubscriptionEvent()
@@ -87,7 +105,7 @@ public static class NotificationManager
         if (f_CurrentProgressApple < f_TargetProgessApple)
         {
             f_CurrentProgressApple = Tweening.Lerp(f_CurrentProgressApple, f_TargetProgessApple, 0.1f);
-            
+
             if (f_TargetProgessApple - f_CurrentProgressApple < 0.05f)
                 f_CurrentProgressApple = f_TargetProgessApple;
         }
@@ -102,7 +120,7 @@ public static class NotificationManager
             int i_appleEaten = (GameInfo.GetNbAppleNeeded() > 10) ? GameInfo.GetNbAppleEaten() - i_Diff : GameInfo.GetNbAppleEaten();
             int i_appleTarget = (GameInfo.GetNbAppleNeeded() > 10) ? GameInfo.GetNbAppleNeeded() - i_Diff : GameInfo.GetNbAppleNeeded();
 
-            f_TargetProgessApple = (i_appleEaten > 0) ? (float) i_appleEaten / i_appleTarget : 0;
+            f_TargetProgessApple = (i_appleEaten > 0) ? (float)i_appleEaten / i_appleTarget : 0;
         }
     }
 }

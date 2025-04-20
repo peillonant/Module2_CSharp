@@ -13,7 +13,7 @@ public static class Game
         Raylib.InitWindow(1280, 720, "Slither Clash");
         Raylib.SetWindowState(ConfigFlags.ResizableWindow);
         Raylib.SetTargetFPS(60);
-        Raylib.SetExitKey(KeyboardKey.Null); 
+        Raylib.SetExitKey(KeyboardKey.Null);
 
         LoadAsset.Load(_assetsManager);
         _scenesManager.Show<SceneMenu>();
@@ -22,15 +22,13 @@ public static class Game
         UI_Board_Sprite.InitUI_Board_Sprite();
         UINotification_Color.InitUI_Notification_Color();
 
-        Debug.WriteLine("Lancement du programme");
-
         while (!Raylib.WindowShouldClose() && !b_CloseWindow)
         {
             _scenesManager.UpdateScene();
 
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.RayWhite);
-            
+
             _scenesManager.DrawScene();
 
             Raylib.EndDrawing();

@@ -9,13 +9,13 @@ public class PowerSystem
     private Cell? cellBonus;
     private Cell? cellMalus;
 
-    private readonly Power?[] bonusAvailable = new Power[(int) TypeBonus.Count - 1];
-    private readonly Power?[] malusAvailable = new Power[(int) TypeMalus.Count - 1];
-    private int[] bonusSequence = new int[(int) TypeBonus.Count - 1];
-    private int[] malusSequence = new int[(int) TypeMalus.Count - 1];
+    private readonly Power?[] bonusAvailable = new Power[(int)TypeBonus.Count - 1];
+    private readonly Power?[] malusAvailable = new Power[(int)TypeMalus.Count - 1];
+    private int[] bonusSequence = new int[(int)TypeBonus.Count - 1];
+    private int[] malusSequence = new int[(int)TypeMalus.Count - 1];
     private int i_IndexBonusSequence = 0;
     private int i_IndexMalusSequence = 0;
-    
+
     private Power? bonusDisplayed;
     private Power? malusDisplayed;
 
@@ -28,13 +28,13 @@ public class PowerSystem
     private readonly float f_DelayReroll = 10f;
     private readonly float f_DelayPowerPicked = 15f;
     private bool b_PowerHasBeenPicked = true;
-    
+
     public PowerSystem(Character characterOrigin)
     {
         this.characterOrigin = characterOrigin;
 
         InitPowerAvailable();
-    }  
+    }
 
     // Method to initialize the Array Power Available and trigger the first round for selected power
     private void InitPowerAvailable()
@@ -52,11 +52,11 @@ public class PowerSystem
 
         // Malus Manager
         malusAvailable[0] = new Stun(this);
-        malusAvailable[1] = new Obstacle(this);     
-        malusAvailable[2] = new DownTimer(this);    
+        malusAvailable[1] = new Obstacle(this);
+        malusAvailable[2] = new DownTimer(this);
         malusAvailable[3] = new Extend(this);
         malusAvailable[4] = new Bomb(this);
-        malusAvailable[5] = new Border(this); 
+        malusAvailable[5] = new Border(this);
 
         InitMalusSequence();
         GenerateRandomSequence(TypePower.Malus);
@@ -66,31 +66,31 @@ public class PowerSystem
     private void InitBonusSequence()
     {
         i_IndexBonusSequence = 0;
-        
-        for (int i = 0; i <  bonusSequence.Length; i++)
+
+        for (int i = 0; i < bonusSequence.Length; i++)
             bonusSequence[i] = -1;
     }
     private void InitMalusSequence()
     {
         i_IndexMalusSequence = 0;
 
-        for (int i = 0; i <  malusSequence.Length; i++)
+        for (int i = 0; i < malusSequence.Length; i++)
             malusSequence[i] = -1;
-    }   
+    }
 
     // Method to Generate the RandomSequence for the Power
     private void GenerateRandomSequence(TypePower typePower)
     {
         int i_IndexRandom;
 
-        if(typePower == TypePower.Bonus)
+        if (typePower == TypePower.Bonus)
         {
             for (int i = 0; i < bonusSequence.Length; i++)
             {
                 do
                 {
-                    i_IndexRandom = Raylib.GetRandomValue(0, bonusAvailable.Length - 1);                    
-                } while(CheckValueAlreadyInSequence(i_IndexRandom, bonusSequence, i));
+                    i_IndexRandom = Raylib.GetRandomValue(0, bonusAvailable.Length - 1);
+                } while (CheckValueAlreadyInSequence(i_IndexRandom, bonusSequence, i));
 
                 bonusSequence[i] = i_IndexRandom;
             }
@@ -102,18 +102,18 @@ public class PowerSystem
                 do
                 {
                     i_IndexRandom = Raylib.GetRandomValue(0, malusAvailable.Length - 1);
-                } while(CheckValueAlreadyInSequence(i_IndexRandom, malusSequence, i));
+                } while (CheckValueAlreadyInSequence(i_IndexRandom, malusSequence, i));
 
                 malusSequence[i] = i_IndexRandom;
             }
         }
     }
-    
+
     private bool CheckValueAlreadyInSequence(int i_IndexToCheck, int[] arrayToCheck, int i_CurrentIndex)
     {
         if (i_CurrentIndex == 0)
             return false;
-        
+
         for (int i = 0; i < i_CurrentIndex; i++)
         {
             if (arrayToCheck[i] == i_IndexToCheck)
@@ -121,7 +121,7 @@ public class PowerSystem
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -158,8 +158,8 @@ public class PowerSystem
         if (cellAvailables.Count > 10)
         {
             // Managing the position of the Bonus and Malus
-           AddPowerOnBoard(TypeCell.Bonus);
-           AddPowerOnBoard(TypeCell.Malus);
+            AddPowerOnBoard(TypeCell.Bonus);
+            AddPowerOnBoard(TypeCell.Malus);
         }
 
         cellAvailables.Clear();
@@ -167,10 +167,10 @@ public class PowerSystem
 
     // Method that Add the TypeCell on the correct cell of the Board and trigger the method to select the first element from the Sequence
     private void AddPowerOnBoard(TypeCell typeCell)
-    {  
+    {
         int indexCell = Raylib.GetRandomValue(0, cellAvailables.Count - 1);
         cellAvailables[indexCell].UpdateCell(typeCell);
-       
+
         if (typeCell == TypeCell.Bonus)
             cellBonus = cellAvailables[indexCell];
         else
@@ -187,7 +187,7 @@ public class PowerSystem
     {
         if (typeCell == TypeCell.Bonus)
         {
-            if (bonusDisplayed != bonusAvailable[bonusSequence[i_IndexBonusSequence]])  
+            if (bonusDisplayed != bonusAvailable[bonusSequence[i_IndexBonusSequence]])
             {
                 bonusDisplayed = bonusAvailable[bonusSequence[i_IndexBonusSequence]];
                 i_IndexBonusSequence++;
@@ -227,14 +227,14 @@ public class PowerSystem
             InitMalusSequence();
             GenerateRandomSequence(TypePower.Malus);
         }
-        
+
         SelectPowerSpawn(TypeCell.Bonus);
         SelectPowerSpawn(TypeCell.Malus);
     }
 
     // Method to retrieve a list of potential Target for the Malus, then return the character targetted
     public Character PickCharacterOpponent()
-    {      
+    {
         List<Character> listCharacterTarget = TableManager.RetrieveListCharacter(characterOrigin);
 
         int i_IndexRandom = Raylib.GetRandomValue(0, listCharacterTarget.Count - 1);
@@ -246,7 +246,7 @@ public class PowerSystem
     public void TriggerBonusPower()
     {
         bonusDisplayed?.UsePower();
-        
+
         malusDisplayed = null;
         cellMalus?.UpdateCell(TypeCell.None);
 

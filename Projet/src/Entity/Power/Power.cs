@@ -32,7 +32,7 @@ public enum TypeMalus
     Count
 }
 
-public abstract class Power (PowerSystem powerSystemOrigin)
+public abstract class Power(PowerSystem powerSystemOrigin)
 {
     protected TypePower typePower;
     protected PowerSystem powerSystemOrigin = powerSystemOrigin;
@@ -48,19 +48,28 @@ public abstract class Power (PowerSystem powerSystemOrigin)
 
     public TypeBonus GetPowerTypeBonus() => typeBonus;
     public TypeMalus GetPowerTypeMalus() => typeMalus;
-    
+
     protected void NotificationBoardPower(Character characterTargeted, string namePower)
     {
         if (powerSystemOrigin.characterOrigin.IsPlayer())
         {
             NotificationManager.AddNotificationBoard(characterTargeted, TypeNotificationBoard.Attacking);
+
+            NotificationManager.AddNotificationArrow(powerSystemOrigin.characterOrigin, characterTargeted, TypeNotificationArrow.PlayerAttacking);
         }
         else if (characterTargeted.IsPlayer())
         {
             NotificationManager.AddNotificationBoard(characterTargeted, TypeNotificationBoard.Attacked);
             NotificationManager.AddNotificationBoard(powerSystemOrigin.characterOrigin, TypeNotificationBoard.AttackedBy);
-            NotificationManager.AddNotificationText(namePower);
+
+            NotificationManager.AddNotificationText(namePower, TypeNotificationText.Power);
+
+            NotificationManager.AddNotificationArrow(powerSystemOrigin.characterOrigin, characterTargeted, TypeNotificationArrow.PlayerAttacked);
+        }
+        else if (powerSystemOrigin.characterOrigin.IsDisplayed() && characterTargeted.IsDisplayed())
+        {
+            NotificationManager.AddNotificationArrow(powerSystemOrigin.characterOrigin, characterTargeted, TypeNotificationArrow.EnemiesAttackingThemself);
         }
     }
-    
+
 }

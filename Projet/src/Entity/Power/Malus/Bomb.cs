@@ -4,7 +4,7 @@ using Raylib_cs;
 
 public class Bomb : Power
 {
-    public Bomb(PowerSystem powerSystemOrigin) : base (powerSystemOrigin)
+    public Bomb(PowerSystem powerSystemOrigin) : base(powerSystemOrigin)
     {
         typePower = TypePower.Malus;
         typeMalus = TypeMalus.Bomb;
@@ -22,15 +22,14 @@ public class Bomb : Power
         else
         {
             List<Cell> cellAvailables = characterTargeted.GetBoard().GetCellAvailable();
-        
+
             int indexCell = Raylib.GetRandomValue(0, cellAvailables.Count - 1);
 
             characterTargeted.GetPowerAffected().AddBomb(cellAvailables[indexCell]);
             characterTargeted.GetPowerAffected().SetAffectedByMalus(true);
 
             cellAvailables[indexCell].UpdateCell(TypeCell.Bomb);
-            cellAvailables[indexCell].SetCellLifeTimer(5);
-            
+            cellAvailables[indexCell].SetCellLifeTimer(10);
         }
 
         NotificationBoardPower(characterTargeted, name);

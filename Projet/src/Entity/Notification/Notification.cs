@@ -9,10 +9,9 @@ public class Notification
     protected bool b_IsTriggered;
 
     // Not optimize due to rezising. Or we have to update when we pass the new size on the Option
-    public Notification(int i_PX, int i_PY, float f_Delay)
+    public Notification(Vector2 v2_Position, float f_Delay)
     {
-        v2_Position.X = i_PX;
-        v2_Position.Y = i_PY;
+        this.v2_Position = v2_Position;
         this.f_Delay = f_Delay;
     }
 
@@ -23,7 +22,7 @@ public class Notification
     public float GetDelay() => f_Delay;
 
     // SET METHOD
-    public void SetTriggered(bool b_newTriggered) => b_IsTriggered = b_newTriggered; 
+    public void SetTriggered(bool b_newTriggered) => b_IsTriggered = b_newTriggered;
 
     public void NotificationHasBeenTriggered()
     {
@@ -34,7 +33,7 @@ public class Notification
     public void UpdateNotif()
     {
         f_Timer += Raylib.GetFrameTime();
-        
+
         if (f_Timer >= f_Delay && b_IsTriggered)
         {
             f_Timer = 0;
